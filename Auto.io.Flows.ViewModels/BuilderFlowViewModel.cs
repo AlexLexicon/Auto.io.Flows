@@ -180,7 +180,7 @@ public partial class BuilderFlowViewModel : ObservableObject
     {
         var builderStepViewModel = _dataContextFactory.Create<BuilderStepViewModel, IStep>(step);
 
-        if (step is MoveMouseStep)
+        if (step is MouseMoveStep)
         {
             builderStepViewModel.LoadFlowParameters(new List<FlowParameter>
             {

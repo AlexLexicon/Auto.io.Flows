@@ -1,7 +1,7 @@
 ﻿namespace Auto.io.Flows.Application.Models.Parameters;
 public class IntegerParameter : IParameter
 {
-    private static readonly char[] DIGITS = new[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+    private static readonly char[] DIGITS = new[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-' };
 
     public string Identifier => "IntegerV1";
     public UserInterfaces UserInterface => UserInterfaces.TextBox;
@@ -21,7 +21,18 @@ public class IntegerParameter : IParameter
         {
             if (!string.IsNullOrWhiteSpace(valueString))
             {
-                return valueString.All(DIGITS.Contains);
+                if (valueString.All(DIGITS.Contains))
+                {
+                    int negativeCount = valueString.Count(c => c == '-');
+                    if (negativeCount <= 0)
+                    {
+                        return true;
+                    }
+                    else if (negativeCount == 1)
+                    {
+                        return valueString[0] == '-';
+                    }
+                }
             }
         }
 

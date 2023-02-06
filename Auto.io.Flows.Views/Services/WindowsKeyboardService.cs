@@ -3,6 +3,7 @@ using Auto.io.Flows.Views.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Auto.io.Flows.Views.Services;
@@ -21,7 +22,7 @@ public class WindowsKeyboardService : IKeyboardService
         _keyReleasedHandlers = new Dictionary<Guid, KeyEventHandler>();
     }
 
-    private void _windowsHookService_KeyboardPressed(WindowsHookService.EventArgs e)
+    private async void _windowsHookService_KeyboardPressed(WindowsHookService.EventArgs e)
     {
         Keys key = e.KeyboardData.Key;
 
@@ -45,7 +46,7 @@ public class WindowsKeyboardService : IKeyboardService
         {
             foreach (KeyEventHandler handler in handlers)
             {
-                handler.ActionHandler.Invoke();
+                await handler.ActionHandler.Invoke();
             }
         }
     }
@@ -62,6 +63,21 @@ public class WindowsKeyboardService : IKeyboardService
 
     public void KeyPressed(Guid id, string key, Action? handler)
     {
+        if (handler is null)
+        {
+            KeyPressed(id, key, handlerAsync: null);
+        }
+        else
+        {
+            KeyPressed(id, key, () =>
+            {
+                handler.Invoke();
+                return Task.CompletedTask;
+            });
+        }
+    }
+    public void KeyPressed(Guid id, string key, Func<Task>? handlerAsync)
+    {
         Keys? formsKey = key.ToWindowsFormsKey();
 
         if (formsKey is null)
@@ -71,7 +87,7 @@ public class WindowsKeyboardService : IKeyboardService
 
         if (_keyPressedHandlers.TryGetValue(id, out KeyEventHandler? keyEventHandler))
         {
-            if (handler is null)
+            if (handlerAsync is null)
             {
                 if (keyEventHandler.Key == formsKey.Value)
                 {
@@ -85,20 +101,35 @@ public class WindowsKeyboardService : IKeyboardService
             else
             {
                 keyEventHandler.Key = formsKey.Value;
-                keyEventHandler.ActionHandler = handler;
+                keyEventHandler.ActionHandler = handlerAsync;
             }
         }
-        else if (handler is not null)
+        else if (handlerAsync is not null)
         {
             _keyPressedHandlers.Add(id, new KeyEventHandler
             {
                 Key = formsKey.Value,
-                ActionHandler = handler,
+                ActionHandler = handlerAsync,
             });
         }
     }
 
     public void KeyReleased(Guid id, string key, Action? handler)
+    {
+        if (handler is null)
+        {
+            KeyReleased(id, key, handlerAsync: null);
+        }
+        else
+        {
+            KeyReleased(id, key, () =>
+            {
+                handler.Invoke();
+                return Task.CompletedTask;
+            });
+        }
+    }
+    public void KeyReleased(Guid id, string key, Func<Task>? handlerAsync)
     {
         Keys? formsKey = key.ToWindowsFormsKey();
 
@@ -109,7 +140,7 @@ public class WindowsKeyboardService : IKeyboardService
 
         if (_keyReleasedHandlers.TryGetValue(id, out KeyEventHandler? keyEventHandler))
         {
-            if (handler is null)
+            if (handlerAsync is null)
             {
                 if (keyEventHandler.Key == formsKey.Value)
                 {
@@ -123,15 +154,15 @@ public class WindowsKeyboardService : IKeyboardService
             else
             {
                 keyEventHandler.Key = formsKey.Value;
-                keyEventHandler.ActionHandler = handler;
+                keyEventHandler.ActionHandler = handlerAsync;
             }
         }
-        else if (handler is not null)
+        else if (handlerAsync is not null)
         {
             _keyReleasedHandlers.Add(id, new KeyEventHandler
             {
                 Key = formsKey.Value,
-                ActionHandler = handler,
+                ActionHandler = handlerAsync,
             });
         }
     }
@@ -139,6 +170,6 @@ public class WindowsKeyboardService : IKeyboardService
     private class KeyEventHandler
     {
         public required Keys Key { get; set; }
-        public required Action ActionHandler { get; set; }
+        public required Func<Task> ActionHandler { get; set; }
     }
 }

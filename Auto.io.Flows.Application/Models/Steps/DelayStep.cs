@@ -4,12 +4,12 @@ namespace Auto.io.Flows.Application.Models.Steps;
 public class DelayStep : IStep
 {
     public string Identifier => "DelayV1";
-    public string Description => "Waits the provided number of seconds.";
+    public string Description => "Waits the provided number of Milliseconds.";
     public IReadOnlyList<IParameter> Parameters => new List<IParameter>
     {
         new IntegerParameter
         {
-            DisplayName = "Seconds",
+            DisplayName = "Milliseconds",
         }
     };
 
@@ -17,9 +17,9 @@ public class DelayStep : IStep
     {
         string? parameterString = parameters.FirstOrDefault()?.ToString();
 
-        if (int.TryParse(parameterString, out int seconds))
+        if (int.TryParse(parameterString, out int milliSeconds))
         {
-            await Task.Delay(seconds * 1000);
+            await Task.Delay(milliSeconds);
         }
     }
 }

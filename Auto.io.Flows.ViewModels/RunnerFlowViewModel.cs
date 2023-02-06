@@ -47,8 +47,8 @@ public partial class RunnerFlowViewModel : ObservableObject
         }
         IterationsText = "1";
         IsIterationsTextValid = true;
-        StopHotKeys = IKeysService.KEYS;
-        SelectedStopHotKey = StopHotKeys.First();
+        ToggleHotKeys = IKeysService.KEYS;
+        SelectedToggleHotKey = ToggleHotKeys.First();
         StepDelays = new List<string>
         {
             STEP_DELAY_EIGHT_SECONDS,
@@ -99,16 +99,16 @@ public partial class RunnerFlowViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    private IReadOnlyList<string> _stopHotKeys = null!;
+    private IReadOnlyList<string> _toggleHotKeys = null!;
 
-    private string? _selectedStopHotKey;
-    public string? SelectedStopHotKey
+    private string? _selectedToggleHotKey;
+    public string? SelectedToggleHotKey
     {
-        get => _selectedStopHotKey;
+        get => _selectedToggleHotKey;
         set
         {
-            _selectedStopHotKey = value;
-            OnSelectedStopHotKeyChanged();
+            _selectedToggleHotKey = value;
+            //OnSelectedStopHotKeyChanged();
             OnPropertyChanged();
         }
     }
@@ -129,7 +129,7 @@ public partial class RunnerFlowViewModel : ObservableObject
     private bool _isIterationsTextEnabled;
 
     [ObservableProperty]
-    private bool _isStopHotKeysEnabled;
+    private bool _isToggleHotKeysEnabled;
 
     [ObservableProperty]
     private bool _isInfiniteEnabled;
@@ -149,22 +149,30 @@ public partial class RunnerFlowViewModel : ObservableObject
     [ObservableProperty]
     private string _selectedStepDelay = null!;
 
-    private bool IsHotKeyPressed { get; set; }
+    private bool IsToggleHotKeyPressed { get; set; }
 
     private void UpdateIterationsTextEnabled()
     {
         Update();
     }
 
-    private void OnSelectedStopHotKeyChanged()
+    [RelayCommand]
+    private void StopHotKeySelected()
     {
-        if (SelectedStopHotKey is not null)
+        if (SelectedToggleHotKey is not null)
         {
-            _keyboardService.KeyReleased(_keyboardHandlerId, SelectedStopHotKey, () =>
+            _keyboardService.KeyReleased(_keyboardHandlerId, SelectedToggleHotKey, async () =>
             {
-                IsHotKeyPressed = true;
-                IsStopping = true;
-                Update();
+                if (IsRunning && !IsStopping)
+                {
+                    IsToggleHotKeyPressed = true;
+                    IsStopping = true;
+                    Update();
+                }
+                else if (!IsRunning)
+                {
+                    await RunAsync();
+                }
             });
         }
     }
@@ -184,7 +192,7 @@ public partial class RunnerFlowViewModel : ObservableObject
             IsRunning = true;
             Update();
 
-            IsHotKeyPressed = false;
+            IsToggleHotKeyPressed = false;
             IsStopping = false;
 
             if (!int.TryParse(IterationsText, out int maxIterations))
@@ -197,6 +205,7 @@ public partial class RunnerFlowViewModel : ObservableObject
                 stepViewModel.State = RunnerStepViewModel.STATE_NOTSTARTED;
             }
 
+            int stepDelayMillisecondsMinimum = 125;
             int stepDelayMilliseconds = SelectedStepDelay switch
             {
                 STEP_DELAY_FORTH_SECONDS => 250,
@@ -206,7 +215,7 @@ public partial class RunnerFlowViewModel : ObservableObject
                 STEP_DELAY_10_SECONDS => 10000,
                 STEP_DELAY_15_SECONDS => 15000,
                 STEP_DELAY_30_SECONDS => 30000,
-                _ => 125,
+                _ => stepDelayMillisecondsMinimum,
             };
 
             int iteration = 0;
@@ -220,7 +229,8 @@ public partial class RunnerFlowViewModel : ObservableObject
                 var runnerStepViewModel = RunnerStepViewModels[index];
 
                 runnerStepViewModel.State = RunnerStepViewModel.STATE_WAITING;
-                await Task.Delay(stepDelayMilliseconds);
+                int delay = isSkipping ? stepDelayMillisecondsMinimum : stepDelayMilliseconds;
+                await Task.Delay(delay);
 
                 if (!isSkipping)
                 {
@@ -239,7 +249,7 @@ public partial class RunnerFlowViewModel : ObservableObject
 
                 index++;
 
-                if (IsHotKeyPressed || IsStopping)
+                if (IsToggleHotKeyPressed || IsStopping)
                 {
                     isSkipping = true;
                 }
@@ -271,7 +281,7 @@ public partial class RunnerFlowViewModel : ObservableObject
                 }
             }
 
-            IsHotKeyPressed = false;
+            IsToggleHotKeyPressed = false;
             IsStopping = false;
             IsRunning = false;
         }
@@ -283,7 +293,7 @@ public partial class RunnerFlowViewModel : ObservableObject
     {
         IsRunnable = !IsRunning && IsIterationsTextValid && RunnerStepViewModels.Any();
         IsIterationsTextEnabled = !IsRunning && !IsInfinite;
-        IsStopHotKeysEnabled = !IsRunning;
+        IsToggleHotKeysEnabled = !IsRunning;
         IsInfiniteEnabled = !IsRunning;
         IsStopEnabled = IsRunning && !IsStopping;
     }

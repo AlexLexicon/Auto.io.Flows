@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:c="clr-namespace:Lexicon.Common.Wpf.Controls;assembly=Lexicon.Common.Wpf.Controls"
     xmlns:v="clr-namespace:Auto.io.Flows.Views"
     xmlns:vm="clr-namespace:Auto.io.Flows.ViewModels;assembly=Auto.io.Flows.ViewModels"
@@ -41,11 +42,17 @@
                     IsChecked="{Binding IsInfinite, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <Label 
                     Margin="6,0,2,0"
-                    Content="Stop Hotkey:"/>
+                    Content="Toggle Hotkey:"/>
                 <ComboBox
-                    IsEnabled="{Binding IsStopHotKeysEnabled}"
-                    ItemsSource="{Binding StopHotKeys}"
-                    SelectedItem="{Binding SelectedStopHotKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    IsEnabled="{Binding IsToggleHotKeysEnabled}"
+                    ItemsSource="{Binding ToggleHotKeys}"
+                    SelectedItem="{Binding SelectedToggleHotKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <b:Interaction.Triggers>
+                        <b:EventTrigger EventName="SelectionChanged">
+                            <b:InvokeCommandAction Command="{Binding StopHotKeySelectedCommand}"/>
+                        </b:EventTrigger>
+                    </b:Interaction.Triggers>
+                </ComboBox>
                 <Label 
                     Margin="6,0,2,0"
                     Content="Step Delay:"/>

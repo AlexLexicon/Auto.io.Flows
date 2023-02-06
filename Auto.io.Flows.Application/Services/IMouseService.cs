@@ -15,4 +15,5 @@ public interface IMouseService
     void ReleaseLeftMouseButton();
     void PressRightMouseButton();
     void ReleaseRightMouseButton();
+    void ScrollMouseButton(int amount);
 }
