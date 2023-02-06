@@ -23,17 +23,20 @@ public partial class RunnerFlowViewModel : ObservableObject
     private readonly Flow _flow;
     private readonly IDataContextFactory _dataContextFactory;
     private readonly IKeyboardService _keyboardService;
+    private readonly IParameterService _parameterService;
 
     public RunnerFlowViewModel(
         Flow flow,
         IDataContextFactory dataContextFactory,
-        IKeyboardService keyboardService)
+        IKeyboardService keyboardService,
+        IParameterService parameterService)
     {
         _keyboardHandlerId = Guid.NewGuid();
 
         _flow = flow;
         _dataContextFactory = dataContextFactory;
         _keyboardService = keyboardService;
+        _parameterService = parameterService;
 
         RunnerStepViewModels = new List<RunnerStepViewModel>();
         if (_flow.Steps is not null)
@@ -211,6 +214,7 @@ public partial class RunnerFlowViewModel : ObservableObject
             };
 
             int iteration = 0;
+            _parameterService.SetVariable(IParameterService.KEY_ITERATION, iteration.ToString());
             int index = 0;
             bool isSkipping = false;
             bool isComplete = false;
@@ -252,6 +256,7 @@ public partial class RunnerFlowViewModel : ObservableObject
                     {
                         index = 0;
                         iteration++;
+                        _parameterService.SetVariable(IParameterService.KEY_ITERATION, iteration.ToString());
                     }
 
                     if (iteration >= maxIterations && !IsInfinite)

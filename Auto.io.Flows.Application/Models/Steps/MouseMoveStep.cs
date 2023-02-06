@@ -1,5 +1,6 @@
 ﻿using Auto.io.Flows.Application.Models.Parameters;
 using Auto.io.Flows.Application.Services;
+using System.Linq;
 
 namespace Auto.io.Flows.Application.Models.Steps;
 public class MouseMoveStep : IStep
@@ -28,7 +29,7 @@ public class MouseMoveStep : IStep
 
     public Task ExecuteAsync(IEnumerable<object?> parameters)
     {
-        string? xString = parameters.FirstOrDefault()?.ToString();
+        string? xString = parameters.ElementAtOrDefault(0)?.ToString();
         string? yString = parameters.ElementAtOrDefault(1)?.ToString();
 
         if (int.TryParse(xString, out int x) && int.TryParse(yString, out int y))

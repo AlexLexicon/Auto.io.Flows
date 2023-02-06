@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IFlowService, FlowService>();
         services.AddSingleton<IStepService, StepService>();
+        services.AddSingleton<IParameterService, ParameterService>();
 
         List<TypeInfo> stepTypes = typeof(ServiceCollectionExtensions)
             .Assembly
