@@ -1,1 +1,0 @@
-{"Steps":[{"Identifer":"MouseScrollV1","Parameters":[{"Identifier":"IntegerV1","Value":"120"}]},{"Identifer":"DelayV1","Parameters":[{"Identifier":"IntegerV1","Value":"1000"}]},{"Identifer":"MouseScrollV1","Parameters":[{"Identifier":"IntegerV1","Value":"-120"}]}]}
