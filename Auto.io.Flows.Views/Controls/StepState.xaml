@@ -1,0 +1,230 @@
+﻿<UserControl 
+    x:Class="Auto.io.Flows.Views.Controls.StepState"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:vm="clr-namespace:Auto.io.Flows.ViewModels;assembly=Auto.io.Flows.ViewModels"
+    mc:Ignorable="d" 
+    Width="32"
+    Height="32"
+    x:Name="xStepState">
+
+    <UserControl.ToolTip>
+        <ToolTip>
+            <TextBlock>
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Model.State}" Value="{x:Static vm:RunnerStepViewModel.STATE_NOTSTARTED}">
+                                <Setter Property="Text" Value="Not started"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Model.State}" Value="{x:Static vm:RunnerStepViewModel.STATE_RUNNING}">
+                                <Setter Property="Text" Value="Running"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Model.State}" Value="{x:Static vm:RunnerStepViewModel.STATE_WAITING}">
+                                <Setter Property="Text" Value="Waiting"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Model.State}" Value="{x:Static vm:RunnerStepViewModel.STATE_SKIPPED}">
+                                <Setter Property="Text" Value="Skipped"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Model.State}" Value="{x:Static vm:RunnerStepViewModel.STATE_CANCELLED}">
+                                <Setter Property="Text" Value="Cancelled"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Model.State}" Value="{x:Static vm:RunnerStepViewModel.STATE_SUCCEEDED}">
+                                <Setter Property="Text" Value="Succeeded"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Model.State}" Value="{x:Static vm:RunnerStepViewModel.STATE_FAILED}">
+                                <Setter Property="Text" Value="Failed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </ToolTip>
+    </UserControl.ToolTip>
+
+    <Grid>
+        <Grid>
+            <Border
+                CornerRadius="16"
+                BorderBrush="{StaticResource xBrushColorGrayLight}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{StaticResource xBrushColorWhite}"/>
+                        <Setter Property="BorderThickness" Value="2"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_RUNNING}">
+                                <Setter Property="Background" Value="{StaticResource xBrushColorBlue}"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_WAITING}">
+                                <Setter Property="Background" Value="{StaticResource xBrushColorBlue}"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_SKIPPED}">
+                                <Setter Property="Background" Value="{StaticResource xBrushColorGrayBright}"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_CANCELLED}">
+                                <Setter Property="Background" Value="{StaticResource xBrushColorGrayBright}"/>
+                                <Setter Property="BorderThickness" Value="2"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_SUCCEEDED}">
+                                <Setter Property="Background" Value="{StaticResource xBrushColorGreen}"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_FAILED}">
+                                <Setter Property="Background" Value="{StaticResource xBrushColorRed}"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+            <Label>
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Background" Value="{x:Null}"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="OpacityMask" Value="{x:Null}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_RUNNING}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_WAITING}">
+                                <Setter Property="Margin" Value="4"/>
+                                <Setter Property="Background" Value="{StaticResource xBrushColorWhite}"/>
+                                <Setter Property="OpacityMask">
+                                    <Setter.Value>
+                                        <ImageBrush ImageSource="../images/wait.full.a.256.png"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_SKIPPED}">
+                                <Setter Property="Margin" Value="6"/>
+                                <Setter Property="Background" Value="{StaticResource xBrushColorGrayLight}"/>
+                                <Setter Property="OpacityMask">
+                                    <Setter.Value>
+                                        <ImageBrush ImageSource="../images/slash.full.a.256.png">
+                                            <ImageBrush.RelativeTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform CenterY="0.5" CenterX="0.5" ScaleY="1" ScaleX="-1"/>
+                                                </TransformGroup>
+                                            </ImageBrush.RelativeTransform>
+                                        </ImageBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_CANCELLED}">
+                                <Setter Property="Margin" Value="6"/>
+                                <Setter Property="Background" Value="{StaticResource xBrushColorGrayLight}"/>
+                                <Setter Property="OpacityMask">
+                                    <Setter.Value>
+                                        <ImageBrush ImageSource="../images/slash.full.a.256.png">
+                                            <ImageBrush.RelativeTransform>
+                                                <TransformGroup>
+                                                    <ScaleTransform CenterY="0.5" CenterX="0.5" ScaleY="1" ScaleX="-1"/>
+                                                </TransformGroup>
+                                            </ImageBrush.RelativeTransform>
+                                        </ImageBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_SUCCEEDED}">
+                                <Setter Property="Margin" Value="4"/>
+                                <Setter Property="Background" Value="{StaticResource xBrushColorWhite}"/>
+                                <Setter Property="OpacityMask">
+                                    <Setter.Value>
+                                        <ImageBrush ImageSource="../images/checkmark.full.a.256.png"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_FAILED}">
+                                <Setter Property="Margin" Value="6"/>
+                                <Setter Property="Background" Value="{StaticResource xBrushColorWhite}"/>
+                                <Setter Property="OpacityMask">
+                                    <Setter.Value>
+                                        <ImageBrush ImageSource="../images/close.full.a.256.png"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <Label 
+                Padding="0" 
+                d:Visibility="Visible"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding State, ElementName=xStepState}" Value="{x:Static vm:RunnerStepViewModel.STATE_RUNNING}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+                <Grid>
+                    <Grid RenderTransformOrigin="0.5,0.5">
+                        <Grid.RenderTransform>
+                            <RotateTransform/>
+                        </Grid.RenderTransform>
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Style.Triggers>
+                                    <EventTrigger RoutedEvent="Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation 
+                                                    Storyboard.TargetProperty="(Grid.RenderTransform).(RotateTransform.Angle)" 
+                                                    To="360" 
+                                                    Duration="0:0:2" 
+                                                    RepeatBehavior="Forever"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="9"/>
+                                <ColumnDefinition Width="9"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="9"/>
+                                <RowDefinition Height="9"/>
+                            </Grid.RowDefinitions>
+                            <Grid ClipToBounds="True">
+                                <Rectangle 
+                                    Stroke="{StaticResource xBrushColorWhite}"
+                                    StrokeThickness="3"
+                                    Width="18" 
+                                    Height="18" 
+                                    RadiusX="11" 
+                                    RadiusY="11"/>
+                            </Grid>
+                            <Grid 
+                                ClipToBounds="True"
+                                Grid.Column="1" 
+                                Grid.Row="1">
+                                <Rectangle 
+                                    Stroke="{StaticResource xBrushColorWhite}"
+                                    StrokeThickness="3" 
+                                    Width="18" 
+                                    Height="18" 
+                                    Margin="-9,-9,0,0" 
+                                    RadiusX="11" 
+                                    RadiusY="11"/>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Label>
+        </Grid>
+    </Grid>
+</UserControl>

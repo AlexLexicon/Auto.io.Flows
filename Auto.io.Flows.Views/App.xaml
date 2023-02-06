@@ -1,0 +1,20 @@
+﻿<Application 
+    x:Class="Auto.io.Flows.Views.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Lexicon.Common.Wpf.Controls;component/Resources/CommonWpfControlsResources.xaml"/>
+                <ResourceDictionary Source="/Auto.io.Flows.Views;component/Brushes.xaml"/>
+                <ResourceDictionary Source="/Auto.io.Flows.Views;component/Converters.xaml"/>
+                <ResourceDictionary Source="/Auto.io.Flows.Views;component/Styles/Buttons.xaml"/>
+                <ResourceDictionary Source="/Auto.io.Flows.Views;component/Styles/ComboBoxes.xaml"/>
+                <ResourceDictionary Source="/Auto.io.Flows.Views;component/Styles/Labels.xaml"/>
+                <ResourceDictionary Source="/Auto.io.Flows.Views;component/Styles/Menus.xaml"/>
+                <ResourceDictionary Source="/Auto.io.Flows.Views;component/Styles/TextBoxes.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

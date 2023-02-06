@@ -1,0 +1,92 @@
+﻿<UserControl 
+    x:Class="Auto.io.Flows.Views.BuilderFlowView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:c="clr-namespace:Lexicon.Common.Wpf.Controls;assembly=Lexicon.Common.Wpf.Controls"
+    xmlns:v="clr-namespace:Auto.io.Flows.Views"
+    xmlns:vm="clr-namespace:Auto.io.Flows.ViewModels;assembly=Auto.io.Flows.ViewModels"
+    mc:Ignorable="d" 
+    d:DataContext="{d:DesignInstance vm:BuilderFlowViewModel}"
+    d:DesignWidth="800"
+    d:DesignHeight="450">
+
+    <Border 
+        BorderThickness="1"
+        BorderBrush="{StaticResource xBrushColorGrayLighter}">
+        <DockPanel Background="#FFF0F0F0">
+            <DockPanel 
+                DockPanel.Dock="Top"
+                Height="24">
+                <Button
+                    Content="Save"
+                    IsEnabled="{Binding IsSavable}"
+                    Command="{Binding SaveCommand}"/>
+                <Border
+                    BorderThickness="1"
+                    BorderBrush="{StaticResource xBrushColorGrayLighter}"
+                    Margin="6,0">
+                    <DockPanel>
+                        <Button
+                            DockPanel.Dock="Right"
+                            BorderThickness="0"
+                            Padding="3"
+                            Width="22"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Command="{Binding AddStepCommand}">
+                            <c:ButtonForegroundImage ImageSource="images/add.circle.b.256.png"/>
+                        </Button>
+                        <ComboBox 
+                            DockPanel.Dock="Right"
+                            BorderThickness="0"
+                            ItemsSource="{Binding StepIdentifiers}" 
+                            SelectedValue="{Binding SelectedStepIdentifier}">
+                        </ComboBox>
+                    </DockPanel>
+                </Border>
+                <Label 
+                    DockPanel.Dock="Right"
+                    Margin="0,0,6,0">
+                    <TextBlock>
+                        <TextBlock Text="to get Mouse Position: ("/><TextBlock
+                            d:Text="0"
+                            Text="{Binding MousePositionX}"/><TextBlock Text=","/><TextBlock
+                            d:Text="0"
+                            Text="{Binding MousePositionY}"/><TextBlock Text=")"/>
+                    </TextBlock>
+                </Label>
+                <ComboBox 
+                    DockPanel.Dock="Right"
+                    Margin="1,0,2,0"
+                    ItemsSource="{Binding MouseHotKeys}"
+                    SelectedValue="{Binding SelectedMouseHotKey}"/>
+                <Label 
+                    DockPanel.Dock="Right"
+                    Margin="4,0,2,0">
+                    <TextBlock>
+                        <TextBlock Text="Press"/>
+                    </TextBlock>
+                </Label>
+                <Label/>
+            </DockPanel>
+            <ScrollViewer>
+                <Grid Background="{StaticResource xBrushColorWhite}">
+                    <Label 
+                        Visibility="{Binding IsEmpty, Converter={StaticResource xToVisibilityConverter}}"
+                        Content="Add a step to create a flow"/>
+                    <ItemsControl 
+                        Margin="0,6,0,0"
+                        ItemsSource="{Binding BuilderStepViewModels}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <v:BuilderStepView/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</UserControl>

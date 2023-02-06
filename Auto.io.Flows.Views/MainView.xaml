@@ -1,0 +1,36 @@
+﻿<Window 
+    x:Class="Auto.io.Flows.Views.MainView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:v="clr-namespace:Auto.io.Flows.Views"
+    xmlns:vm="clr-namespace:Auto.io.Flows.ViewModels;assembly=Auto.io.Flows.ViewModels"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance vm:MainViewModel}"
+    Title="Auto.io.Flow" 
+    Width="800"
+    Height="450">
+
+    <DockPanel Background="{StaticResource xBrushColorGrayLightest}">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="New Flow" Command="{Binding CreateFlowCommand}"/>
+            <MenuItem Header="Load Flow" Command="{Binding LoadFlowCommand}"/>
+            <MenuItem Header="Run Flow" Command="{Binding RunFlowCommand}"/>
+        </Menu>
+        <Grid 
+            Margin="4"
+            Visibility="{Binding ContentViewModel, Converter={StaticResource xToVisibilityConverter}}">
+            <ContentControl Content="{Binding ContentViewModel}">
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type vm:BuilderFlowViewModel}">
+                        <v:BuilderFlowView/>
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:RunnerFlowViewModel}">
+                        <v:RunnerFlowView/>
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
+        </Grid>
+    </DockPanel>
+</Window>

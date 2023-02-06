@@ -1,0 +1,78 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net7.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Images\add.circle.b.256.png" />
+		<None Remove="Images\add.full.a.256.png" />
+		<None Remove="Images\checkmark.full.a.256.png" />
+		<None Remove="Images\close.full.a.256.png" />
+		<None Remove="Images\play.full.a.256.png" />
+		<None Remove="Images\slash.full.a.256.png" />
+		<None Remove="Images\trash.full.a.256.png" />
+		<None Remove="Images\wait.full.a.256.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Lexicon.Common.DependencyInjection" Version="7.0.48" />
+		<PackageReference Include="Lexicon.Common.Wpf" Version="7.0.48" />
+		<PackageReference Include="Lexicon.Common.Wpf.Controls" Version="7.0.48" />
+		<PackageReference Include="Lexicon.Common.Wpf.DependencyInjection.Amenities" Version="7.0.48" />
+		<PackageReference Include="Lexicon.Common.Wpf.DependencyInjection.Mvvm" Version="7.0.47" />
+		<PackageReference Include="Lexicon.Common.Wpf.ValueConverters" Version="7.0.48" />
+	</ItemGroup>
+
+	
+	<ItemGroup>
+		<Resource Include="Images\add.circle.b.256.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\add.full.a.256.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\checkmark.full.a.256.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\close.full.a.256.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\play.full.a.256.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\slash.full.a.256.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\trash.full.a.256.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\wait.full.a.256.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\Auto.io.Flows.ViewModels\Auto.io.Flows.ViewModels.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Compile Update="Properties\Settings.Designer.cs">
+	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Settings.settings</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <None Update="Properties\Settings.settings">
+	    <Generator>SettingsSingleFileGenerator</Generator>
+	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+	  </None>
+	</ItemGroup>
+
+</Project>

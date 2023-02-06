@@ -1,0 +1,193 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:v="clr-namespace:Auto.io.Flows.Views">
+
+    <Thickness x:Key="MyComboBoxStyle_Padding">4,0</Thickness>
+    <HorizontalAlignment x:Key="MyComboBoxStyle_HorizontalContentAlignment">Left</HorizontalAlignment>
+    <VerticalAlignment x:Key="MyComboBoxStyle_VerticalContentAlignment">Center</VerticalAlignment>
+
+    <Style x:Key="MyComboBoxItemStyle" TargetType="ComboBoxItem">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Border>
+                        <Label>
+                            <Label.Style>
+                                <Style TargetType="Label">
+                                    <Setter Property="Background" Value="{StaticResource xBrushColorGrayBright}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource xBrushColorBlack}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource xBrushColorGrayLightest}"/>
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Mode=Self}}" Value="true">
+                                            <Setter Property="Background" Value="{StaticResource xBrushColorGrayLightest}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+                            <ContentPresenter Content="{TemplateBinding Content}"/>
+                        </Label>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ComboBox">
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource MyComboBoxItemStyle}"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="IsEditable" Value="False"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <ToggleButton
+                            Name="ToggleButton"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Focusable="false"
+                            MinHeight="24"
+                            IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                            ClickMode="Press">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ToggleButton">
+                                                <Border
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    Padding="{StaticResource MyComboBoxStyle_Padding}">
+                                                    <DockPanel>
+                                                        <Path 
+                                                            Name="Arrow"
+                                                            DockPanel.Dock="Right"
+                                                            Data="M 0 0 L 4 4 L 8 0 Z"
+                                                            VerticalAlignment="Center"
+                                                            Fill="{TemplateBinding Foreground}">
+                                                        </Path>
+                                                        <Label Padding="0"/>
+                                                    </DockPanel>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+
+                                    <Setter Property="Background" Value="{StaticResource xBrushColorGrayBright}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource xBrushColorBlack}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource xBrushColorGrayLightest}"/>
+
+                                    <Style.Triggers>
+                                        <!--MouseOver-->
+                                        <DataTrigger Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Mode=Self}}" Value="true">
+                                            <Setter Property="BorderBrush" Value="{StaticResource xBrushColorGrayLighter}"/>
+                                        </DataTrigger>
+
+                                        <!--Pressed-->
+                                        <DataTrigger Binding="{Binding Path=IsPressed, RelativeSource={RelativeSource Mode=Self}}" Value="true">
+                                            <Setter Property="Background" Value="{StaticResource xBrushColorGrayLightest}"/>
+                                            <Setter Property="BorderBrush" Value="{StaticResource xBrushColorGrayLighter}"/>
+                                        </DataTrigger>
+
+                                        <!--Checked-->
+                                        <DataTrigger Binding="{Binding Path=IsChecked, RelativeSource={RelativeSource Mode=Self}}" Value="true">
+                                            <Setter Property="Background" Value="{StaticResource xBrushColorGrayLighter}"/>
+                                            <Setter Property="BorderBrush" Value="{StaticResource xBrushColorGrayLighter}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ToggleButton.Style>
+                        </ToggleButton>
+                        <!--We add a 12px margin for the arrow-->
+                        <Label 
+                            Margin="0,0,12,0"
+                            IsHitTestVisible="False"
+                            Padding="{StaticResource MyComboBoxStyle_Padding}"
+                            HorizontalContentAlignment="{StaticResource MyComboBoxStyle_HorizontalContentAlignment}"
+                            VerticalContentAlignment="{StaticResource MyComboBoxStyle_VerticalContentAlignment}">
+                            <ContentPresenter
+                                IsHitTestVisible="False"
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+                            <Label.Style>
+                                <Style TargetType="Label">
+                                    <Setter Property="Foreground" Value="{StaticResource xBrushColorBlack}"/>
+
+                                    <Style.Triggers>
+                                        <!--MouseOver-->
+                                        <DataTrigger Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Mode=Self}}" Value="true">
+                                            <Setter Property="Foreground" Value="{StaticResource xBrushColorBlack}"/>
+                                        </DataTrigger>
+
+                                        <!--Pressed-->
+                                        <DataTrigger Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Mode=Self}}" Value="true">
+                                            <Setter Property="Foreground" Value="{StaticResource xBrushColorBlack}"/>
+                                        </DataTrigger>
+
+                                        <!--Checked-->
+                                        <DataTrigger Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Mode=Self}}" Value="true">
+                                            <Setter Property="Foreground" Value="{StaticResource xBrushColorBlack}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Label.Style>
+                        </Label>
+                        <Popup
+                            Name="Popup"
+                            Placement="Bottom"
+                            IsOpen="{TemplateBinding IsDropDownOpen}"
+                            AllowsTransparency="True"
+                            Focusable="False"
+                            PopupAnimation="Slide">
+                            <Grid
+                                Name="DropDown"
+                                SnapsToDevicePixels="True"               
+                                MinWidth="{TemplateBinding ActualWidth}"
+                                MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                <Border
+                                    x:Name="DropDownBorder"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="{StaticResource xBrushColorGrayBright}"/>
+                                            <Setter Property="BorderBrush" Value="{StaticResource xBrushColorGrayLightest}"/>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+                                <ScrollViewer SnapsToDevicePixels="True">
+                                    <StackPanel 
+                                        IsItemsHost="True" 
+                                        KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                </ScrollViewer>
+                            </Grid>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasItems" Value="false">
+                            <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                        </Trigger>
+                        <Trigger Property="IsGrouping" Value="true">
+                            <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                        </Trigger>
+                        <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="true">
+                            <Setter TargetName="DropDownBorder" Property="Margin" Value="0,2,0,0"/>
+                        </Trigger>
+
+                        <!--Not Valid-->
+                        <Trigger Property="v:AttachedProperties.IsValid" Value="False">
+                            <Setter TargetName="ToggleButton" Property="BorderBrush" Value="{StaticResource xBrushColorRed}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

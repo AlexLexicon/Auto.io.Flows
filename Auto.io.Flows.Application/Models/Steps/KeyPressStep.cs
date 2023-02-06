@@ -1,0 +1,20 @@
+﻿using Auto.io.Flows.Application.Models.Parameters;
+
+namespace Auto.io.Flows.Application.Models.Steps;
+public class KeyPressStep : IStep
+{
+    public string Identifier => "KeyPress";
+    public string Description => "Presses down on the provided key on the keyboard.";
+    public IReadOnlyList<IParameter> Parameters => new List<IParameter>
+    {
+        new KeyParameter
+        {
+            DisplayName = "Key",
+        }
+    };
+
+    public Task ExecuteAsync(IEnumerable<object?> parameters)
+    {
+        throw new NotImplementedException();
+    }
+}

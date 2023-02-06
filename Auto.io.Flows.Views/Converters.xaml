@@ -1,0 +1,13 @@
+﻿<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vc="clr-namespace:Lexicon.Common.Wpf.ValueConverters;assembly=Lexicon.Common.Wpf.ValueConverters">
+
+    <vc:ToVisibilityConverter 
+        x:Key="xToVisibilityConverter" 
+        DefaultHideWhenString="NullOrWhiteSpace" 
+        DefaultHideWhenEnumerable="NullOrEmpty"/>
+
+    <vc:ToBooleanConverter x:Key="xToBooleanConverter"/>
+
+</ResourceDictionary>
