@@ -49,6 +49,7 @@ public partial class RunnerFlowViewModel : ObservableObject
         IsIterationsTextValid = true;
         ToggleHotKeys = IKeysService.KEYS;
         SelectedToggleHotKey = ToggleHotKeys.First();
+        StopHotKeySelected();
         StepDelays = new List<string>
         {
             STEP_DELAY_EIGHT_SECONDS,
@@ -101,17 +102,8 @@ public partial class RunnerFlowViewModel : ObservableObject
     [ObservableProperty]
     private IReadOnlyList<string> _toggleHotKeys = null!;
 
+    [ObservableProperty]
     private string? _selectedToggleHotKey;
-    public string? SelectedToggleHotKey
-    {
-        get => _selectedToggleHotKey;
-        set
-        {
-            _selectedToggleHotKey = value;
-            //OnSelectedStopHotKeyChanged();
-            OnPropertyChanged();
-        }
-    }
 
     private bool _isInfinite;
     public bool IsInfinite
