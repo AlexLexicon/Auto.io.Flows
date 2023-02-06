@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace Auto.io.Flows.Views.Services;
 public class WindowsScreenService : IScreenService
 {
-    private void Screenshot(int x1, int y1, int x2, int y2, string filePath)
+    public void Screenshot(int x1, int y1, int x2, int y2, string filePath)
     {
         Screen? primaryScreen = Screen.PrimaryScreen;
 
@@ -17,11 +17,13 @@ public class WindowsScreenService : IScreenService
             throw new Exception("The primary screen was null when trying to take a screenshot");
         }
 
-        using var image = new Bitmap(primaryScreen.Bounds.Width, primaryScreen.Bounds.Height);
+        var size = new Size(x2 - x1, y2 - y1);
+
+        using var image = new Bitmap(size.Width, size.Height);
 
         Graphics graphics = Graphics.FromImage(image);
 
-        graphics.CopyFromScreen(x1, y1, 0, 0, new Size(x2 - x1, y2 - y2));
+        graphics.CopyFromScreen(x1, y1, 0, 0, size);
 
         var fileInfo = new FileInfo(filePath);
 

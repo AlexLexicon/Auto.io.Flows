@@ -9,9 +9,9 @@ public class ParameterService : IParameterService
 {
     private readonly Dictionary<string, string> _variables;
 
-    public ParameterService(Dictionary<string, string> variables)
+    public ParameterService()
     {
-        _variables = variables;
+        _variables = new Dictionary<string, string>();
     }
 
     public void SetVariable(string key, string value)

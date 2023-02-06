@@ -24,6 +24,8 @@ public class BuilderParameterFactory : IBuilderParameterFactory
                 return _dataContextFactory.Create<BuilderParameterTextBoxViewModel, IParameter>(parameter);
             case UserInterfaces.ComboBox:
                 return _dataContextFactory.Create<BuilderParameterComboBoxViewModel, IParameter>(parameter);
+            case UserInterfaces.FilePathBrowser:
+                return _dataContextFactory.Create<BuilderParameterFilePathBrowserViewModel, IParameter>(parameter);
         }
 
         throw new NotImplementedException($"{nameof(parameter.UserInterface)} '{parameter.UserInterface}' is not implemented for '{nameof(CreateBuilderParameter)}'.");

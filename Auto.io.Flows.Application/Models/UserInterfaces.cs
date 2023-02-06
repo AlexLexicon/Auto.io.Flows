@@ -3,4 +3,5 @@ public enum UserInterfaces
 {
     TextBox,
     ComboBox,
+    FilePathBrowser,
 }

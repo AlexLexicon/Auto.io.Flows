@@ -107,6 +107,9 @@
                     <DataTemplate DataType="{x:Type vm:BuilderParameterTextBoxViewModel}">
                         <v:BuilderParameterTextBoxView/>
                     </DataTemplate>
+                    <DataTemplate DataType="{x:Type vm:BuilderParameterFilePathBrowserViewModel}">
+                        <v:BuilderParameterFilePathBrowserView/>
+                    </DataTemplate>
                 </ItemsControl.Resources>
             </ItemsControl>
         </DockPanel>

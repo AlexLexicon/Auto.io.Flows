@@ -6,6 +6,7 @@ using Auto.io.Flows.ViewModels.Factories;
 using Auto.io.Flows.Views.Services;
 using Lexicon.Common.DependencyInjection.Extensions;
 using Lexicon.Common.Wpf.DependencyInjection;
+using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Services;
 using Lexicon.Common.Wpf.DependencyInjection.Amenities.Extensions;
 using Lexicon.Common.Wpf.DependencyInjection.Extensions;
 using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Extensions;
@@ -31,6 +32,7 @@ public partial class App : System.Windows.Application
         builder.Services.AddSingleton<IBuilderParameterFactory, BuilderParameterFactory>();
         builder.Services.AddSingleton<IMouseService, WindowsMouseService>();
         builder.Services.AddSingleton<IKeyboardService, WindowsKeyboardService>();
+        builder.Services.AddSingleton<IScreenService, WindowsScreenService>();
 
         builder.Services.AddDataContext<BuilderFlowViewModel>();
         builder.Services.AddDataContext<BuilderParameterComboBoxViewModel>();
