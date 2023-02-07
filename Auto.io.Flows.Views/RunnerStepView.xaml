@@ -13,43 +13,53 @@
 
     <Border
         BorderThickness="1"
-        Padding="6"
+        Padding="2"
         CornerRadius="6"
-        BorderBrush="{StaticResource xBrushColorGrayLighter}"
-        Margin="6,0,6,6">
+        Margin="3,0,3,3">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="BorderBrush" Value="{StaticResource xBrushColorGrayLighter}"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsEnabled}" Value="false">
+                        <Setter Property="BorderBrush" Value="{StaticResource xBrushColorGrayLightest}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
         <DockPanel>
             <DockPanel 
                 DockPanel.Dock="Top"
                 Height="22">
+                <Label DockPanel.Dock="Left">
+                    <CheckBox IsChecked="{Binding IsEnabled}"/>
+                </Label>
                 <Label 
                     DockPanel.Dock="Left"
-                    Padding="6,0"
-                    FontWeight="Bold">
+                    Padding="6,0">
                     <TextBlock>
                         <TextBlock Text="{Binding Name}"/>:
                     </TextBlock>
                 </Label>
                 <vc:StepState 
+                    DockPanel.Dock="Right"
                     Width="22"
                     Height="22"
-                    DockPanel.Dock="Right"
                     State="{Binding State}"/>
-                <Label 
-                    HorizontalContentAlignment="Left">
-                    <TextBlock 
-                        Text="{Binding Description}"
-                        TextTrimming="CharacterEllipsis"/>
-                </Label>
+                <ItemsControl 
+                    DockPanel.Dock="Right"
+                    ItemsSource="{Binding RunnerParameterViewModels}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <v:RunnerParameterView/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </DockPanel>
-            <ItemsControl 
-                DockPanel.Dock="Right"
-                ItemsSource="{Binding RunnerParameterViewModels}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <v:RunnerParameterView/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
         </DockPanel>
     </Border>
 </UserControl>

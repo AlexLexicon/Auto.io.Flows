@@ -77,7 +77,7 @@
                         Visibility="{Binding IsEmpty, Converter={StaticResource xToVisibilityConverter}}"
                         Content="Add a step to create a flow"/>
                     <ItemsControl 
-                        Margin="0,6,0,0"
+                        Margin="0,3,0,0"
                         ItemsSource="{Binding BuilderStepViewModels}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>

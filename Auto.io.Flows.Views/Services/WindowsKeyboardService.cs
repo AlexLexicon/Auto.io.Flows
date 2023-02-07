@@ -61,23 +61,26 @@ public class WindowsKeyboardService : IKeyboardService
 
     }
 
-    public void KeyPressed(Guid id, string key, Action? handler)
+    public void UnRegisterKeyPressed(Guid id)
     {
-        if (handler is null)
-        {
-            KeyPressed(id, key, handlerAsync: null);
-        }
-        else
-        {
-            KeyPressed(id, key, () =>
-            {
-                handler.Invoke();
-                return Task.CompletedTask;
-            });
-        }
+        _keyPressedHandlers.Remove(id);
     }
-    public void KeyPressed(Guid id, string key, Func<Task>? handlerAsync)
+    public void RegisterKeyPressed(Guid id, string key, Action handler)
     {
+        ArgumentNullException.ThrowIfNull(key);
+        ArgumentNullException.ThrowIfNull(handler);
+
+        RegisterKeyPressed(id, key, () =>
+        {
+            handler.Invoke();
+            return Task.CompletedTask;
+        });
+    }
+    public void RegisterKeyPressed(Guid id, string key, Func<Task> handlerAsync)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+        ArgumentNullException.ThrowIfNull(handlerAsync);
+
         Keys? formsKey = key.ToWindowsFormsKey();
 
         if (formsKey is null)
@@ -87,24 +90,10 @@ public class WindowsKeyboardService : IKeyboardService
 
         if (_keyPressedHandlers.TryGetValue(id, out KeyEventHandler? keyEventHandler))
         {
-            if (handlerAsync is null)
-            {
-                if (keyEventHandler.Key == formsKey.Value)
-                {
-                    _keyPressedHandlers.Remove(id);
-                }
-                else
-                {
-                    keyEventHandler.Key = formsKey.Value;
-                }
-            }
-            else
-            {
-                keyEventHandler.Key = formsKey.Value;
-                keyEventHandler.ActionHandler = handlerAsync;
-            }
+            keyEventHandler.Key = formsKey.Value;
+            keyEventHandler.ActionHandler = handlerAsync;
         }
-        else if (handlerAsync is not null)
+        else
         {
             _keyPressedHandlers.Add(id, new KeyEventHandler
             {
@@ -114,23 +103,26 @@ public class WindowsKeyboardService : IKeyboardService
         }
     }
 
-    public void KeyReleased(Guid id, string key, Action? handler)
+    public void UnRegisterKeyReleased(Guid id)
     {
-        if (handler is null)
-        {
-            KeyReleased(id, key, handlerAsync: null);
-        }
-        else
-        {
-            KeyReleased(id, key, () =>
-            {
-                handler.Invoke();
-                return Task.CompletedTask;
-            });
-        }
+        _keyReleasedHandlers.Remove(id);
     }
-    public void KeyReleased(Guid id, string key, Func<Task>? handlerAsync)
+    public void RegisterKeyReleased(Guid id, string key, Action handler)
     {
+        ArgumentNullException.ThrowIfNull(key);
+        ArgumentNullException.ThrowIfNull(handler);
+
+        RegisterKeyReleased(id, key, () =>
+        {
+            handler.Invoke();
+            return Task.CompletedTask;
+        });
+    }
+    public void RegisterKeyReleased(Guid id, string key, Func<Task> handlerAsync)
+    {
+        ArgumentNullException.ThrowIfNull(key);
+        ArgumentNullException.ThrowIfNull(handlerAsync);
+
         Keys? formsKey = key.ToWindowsFormsKey();
 
         if (formsKey is null)
@@ -140,24 +132,10 @@ public class WindowsKeyboardService : IKeyboardService
 
         if (_keyReleasedHandlers.TryGetValue(id, out KeyEventHandler? keyEventHandler))
         {
-            if (handlerAsync is null)
-            {
-                if (keyEventHandler.Key == formsKey.Value)
-                {
-                    _keyReleasedHandlers.Remove(id);
-                }
-                else
-                {
-                    keyEventHandler.Key = formsKey.Value;
-                }
-            }
-            else
-            {
-                keyEventHandler.Key = formsKey.Value;
-                keyEventHandler.ActionHandler = handlerAsync;
-            }
+            keyEventHandler.Key = formsKey.Value;
+            keyEventHandler.ActionHandler = handlerAsync;
         }
-        else if (handlerAsync is not null)
+        else
         {
             _keyReleasedHandlers.Add(id, new KeyEventHandler
             {

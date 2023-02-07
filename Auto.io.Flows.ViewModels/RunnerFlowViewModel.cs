@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions.Factories;
 
 namespace Auto.io.Flows.ViewModels;
-public partial class RunnerFlowViewModel : ObservableObject
+public partial class RunnerFlowViewModel : ObservableObject, IDisposable
 {
     private static readonly char[] DIGITS = new[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
 
@@ -151,24 +151,34 @@ public partial class RunnerFlowViewModel : ObservableObject
         Update();
     }
 
+    private bool _isDisposed;
+    public void Dispose()
+    {
+        _keyboardService.UnRegisterKeyReleased(_keyboardHandlerId);
+        _isDisposed = true;
+    }
+
     [RelayCommand]
     private void StopHotKeySelected()
     {
-        if (SelectedToggleHotKey is not null)
+        if (!_isDisposed)
         {
-            _keyboardService.KeyReleased(_keyboardHandlerId, SelectedToggleHotKey, async () =>
+            if (SelectedToggleHotKey is not null)
             {
-                if (IsRunning && !IsStopping)
+                _keyboardService.RegisterKeyReleased(_keyboardHandlerId, SelectedToggleHotKey, async () =>
                 {
-                    IsToggleHotKeyPressed = true;
-                    IsStopping = true;
-                    Update();
-                }
-                else if (!IsRunning)
-                {
-                    await RunAsync();
-                }
-            });
+                    if (IsRunning && !IsStopping)
+                    {
+                        IsToggleHotKeyPressed = true;
+                        IsStopping = true;
+                        Update();
+                    }
+                    else if (!IsRunning)
+                    {
+                        await RunAsync();
+                    }
+                });
+            }
         }
     }
 

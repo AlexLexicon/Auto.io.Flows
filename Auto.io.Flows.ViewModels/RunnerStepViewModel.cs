@@ -49,6 +49,7 @@ public partial class RunnerStepViewModel : ObservableObject
         }
         _stepParameters = stepParameters;
         State = STATE_NOTSTARTED;
+        IsEnabled = true;
     }
 
     [ObservableProperty]
@@ -57,11 +58,34 @@ public partial class RunnerStepViewModel : ObservableObject
     [ObservableProperty]
     private string? _description;
 
-    [ObservableProperty]
     private string? _state;
+    public string? State
+    {
+        get => _state;
+        set
+        {
+            if (IsEnabled || value == STATE_SKIPPED)
+            {
+                _state = value;
+                OnPropertyChanged();
+            }
+        }
+    }
 
     [ObservableProperty]
     private List<RunnerParameterViewModel> _runnerParameterViewModels = null!;
+
+    private bool _isEnabled;
+    public bool IsEnabled
+    {
+        get => _isEnabled;
+        set
+        {
+            _isEnabled = value;
+            OnPropertyChanged();
+            State = IsEnabled ? STATE_NOTSTARTED : STATE_SKIPPED;
+        }
+    }
 
     public async Task<bool> RunAsync()
     {
@@ -69,10 +93,16 @@ public partial class RunnerStepViewModel : ObservableObject
 
         try
         {
-            await _step.ExecuteAsync(_stepParameters);
+            if (!IsEnabled)
+            {
+                State = STATE_SKIPPED;
+            }
+            else
+            {
+                await _step.ExecuteAsync(_stepParameters);
 
-            State = STATE_SUCCEEDED;
-
+                State = STATE_SUCCEEDED;
+            }
             return true;
         }
         catch (Exception e)

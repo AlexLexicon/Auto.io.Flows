@@ -96,7 +96,7 @@
             <ScrollViewer>
                 <Grid Background="{StaticResource xBrushColorWhite}">
                     <ItemsControl 
-                        Margin="0,6,0,0"
+                        Margin="0,3,0,0"
                         ItemsSource="{Binding RunnerStepViewModels}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>

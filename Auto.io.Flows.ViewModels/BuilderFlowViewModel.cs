@@ -15,7 +15,7 @@ using System.Diagnostics;
 using System.Windows.Input;
 
 namespace Auto.io.Flows.ViewModels;
-public partial class BuilderFlowViewModel : ObservableObject
+public partial class BuilderFlowViewModel : ObservableObject, IDisposable
 {
     private readonly Guid _keyboardHandlerId;
 
@@ -103,6 +103,13 @@ public partial class BuilderFlowViewModel : ObservableObject
         IsSavable = !IsEmpty && isValid;
     }
 
+    private bool _isDisposed;
+    public void Dispose()
+    {
+        _keyboardService.UnRegisterKeyReleased(_keyboardHandlerId);
+        _isDisposed = true;
+    }
+
     public void LoadFlow(Flow flow)
     {
         if (flow.Steps is not null)
@@ -121,15 +128,18 @@ public partial class BuilderFlowViewModel : ObservableObject
 
     private void OnSelectedMouseHotKeyChanged()
     {
-        if (SelectedMouseHotKey is not null)
+        if (!_isDisposed)
         {
-            _keyboardService.KeyReleased(_keyboardHandlerId, SelectedMouseHotKey, () =>
+            if (SelectedMouseHotKey is not null)
             {
-                (int x, int y) = _mouseService.GetPosition();
+                _keyboardService.RegisterKeyReleased(_keyboardHandlerId, SelectedMouseHotKey, () =>
+                {
+                    (int x, int y) = _mouseService.GetPosition();
 
-                MousePositionX = x;
-                MousePositionY = y;
-            });
+                    MousePositionX = x;
+                    MousePositionY = y;
+                });
+            }
         }
     }
 

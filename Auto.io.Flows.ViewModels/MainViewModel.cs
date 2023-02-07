@@ -34,13 +34,15 @@ public partial class MainViewModel : ObservableObject
     }
 
     [ObservableProperty]
-    public ObservableObject? _contentViewModel;
+    public IDisposable? _contentViewModel;
 
     [RelayCommand]
     private void CreateFlow()
     {
         if (ContentViewModel is null || PopupIsOk("Create new Flow?", "Are you sure you want to create a new flow? Any unsaved changes you have will be lost."))
         {
+            ContentViewModel?.Dispose();
+
             ContentViewModel = _dataContextFactory.Create<BuilderFlowViewModel>();
         }
     }
@@ -66,6 +68,8 @@ public partial class MainViewModel : ObservableObject
                 _settingsService.BindAndSave(fileConfiguration);
 
                 Flow flow = _flowService.LoadFlow(filePath);
+
+                ContentViewModel?.Dispose();
 
                 var builderFlowViewModel = _dataContextFactory.Create<BuilderFlowViewModel>();
 
@@ -97,6 +101,8 @@ public partial class MainViewModel : ObservableObject
                 _settingsService.BindAndSave(fileConfiguration);
 
                 Flow flow = _flowService.LoadFlow(filePath);
+
+                ContentViewModel?.Dispose();
 
                 ContentViewModel = _dataContextFactory.Create<RunnerFlowViewModel, Flow>(flow);
             }

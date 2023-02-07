@@ -9,13 +9,12 @@
     mc:Ignorable="d" 
     d:DataContext="{d:DesignInstance vm:BuilderParameterFilePathBrowserViewModel}"
     d:DesignWidth="200"
-    Height="34">
+    Height="27">
 
-    <DockPanel>
+    <DockPanel Margin="0,0,0,3">
         <Label 
             DockPanel.Dock="Left" 
             HorizontalContentAlignment="Right"
-            MinWidth="70"
             Padding="6,0">
             <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
         </Label>
