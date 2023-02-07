@@ -9,7 +9,6 @@ using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Settings;
 using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions.Factories;
 using Microsoft.Extensions.Options;
 using System.Collections.ObjectModel;
-using System.IO;
 
 namespace Auto.io.Flows.ViewModels;
 public partial class RunnerFlowViewModel : ObservableObject, IDisposable
@@ -293,7 +292,7 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
 
                 if (!isSkipping)
                 {
-                    
+
                     bool success = await runnerStepViewModel.RunAsync();
 
                     if (!success)
