@@ -3,18 +3,21 @@ using Auto.io.Flows.Views.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Auto.io.Flows.Views.Services;
 public class WindowsKeyboardService : IKeyboardService
 {
+    private readonly WindowsInputService _windowsInputService;
     private readonly WindowsHookService _windowsHookService;
     private readonly Dictionary<Guid, KeyEventHandler> _keyPressedHandlers;
     private readonly Dictionary<Guid, KeyEventHandler> _keyReleasedHandlers;
 
-    public WindowsKeyboardService(WindowsHookService windowsHookService)
+    public WindowsKeyboardService(WindowsInputService windowsInputService, WindowsHookService windowsHookService)
     {
+        _windowsInputService = windowsInputService;
         _windowsHookService = windowsHookService;
         _windowsHookService.KeyboardPressed += _windowsHookService_KeyboardPressed;
 
@@ -59,6 +62,43 @@ public class WindowsKeyboardService : IKeyboardService
     public void ReleaseKey(string key)
     {
 
+    }
+
+    public void SendText(string text)
+    {
+        SendKeys.SendWait(text);
+    }
+
+    [DllImport("User32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
+    public static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
+
+    //[DllImport("user32.dll")]
+    //static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
+
+    public void CtrlCShortcut()
+    {
+        IntPtr calcWindow = FindWindow(null, "Stormworks");
+
+        //uint KEYEVENTF_KEYUP = 2;
+        //byte VK_CONTROL = 0x11;
+        SetForegroundWindow(calcWindow);
+        //keybd_event(VK_CONTROL, 0, 0, 0);
+        //keybd_event(0x43, 0, 0, 0); //Send the C key (43 is "C")
+        //keybd_event(0x43, 0, KEYEVENTF_KEYUP, 0);
+        //keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);// 'Left Control Up
+        //_windowsInputService.SimulateKeyStroke('c', true);
+        //string test = Clipboard.GetText();
+        SendKeys.SendWait("^c");
+    }
+
+    public void CtrlVShortcut()
+    {
+        //_windowsInputService.SimulateKeyStroke('v', true);
+        SendKeys.SendWait("addon ^(v)");
+        //SendKeys.SendWait($"hello{x}{y}{z}");
     }
 
     public void UnRegisterKeyPressed(Guid id)
@@ -149,5 +189,10 @@ public class WindowsKeyboardService : IKeyboardService
     {
         public required Keys Key { get; set; }
         public required Func<Task> ActionHandler { get; set; }
+    }
+
+    public void SetClipboard(string value)
+    {
+        Clipboard.SetText(value);
     }
 }

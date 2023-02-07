@@ -7,8 +7,8 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions" Version="7.0.48" />
-		<PackageReference Include="Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions" Version="7.0.48" />
+		<PackageReference Include="Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions" Version="7.0.49" />
+		<PackageReference Include="Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions" Version="7.0.49" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
 	</ItemGroup>
 

@@ -2,6 +2,7 @@
 using Auto.io.Flows.Application.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions.Factories;
+using System.Windows.Input;
 
 namespace Auto.io.Flows.ViewModels;
 public partial class RunnerStepViewModel : ObservableObject
@@ -74,6 +75,8 @@ public partial class RunnerStepViewModel : ObservableObject
 
     [ObservableProperty]
     private List<RunnerParameterViewModel> _runnerParameterViewModels = null!;
+
+    public ICommand? BringIntoViewCommand { get; set; }
 
     private bool _isEnabled;
     public bool IsEnabled

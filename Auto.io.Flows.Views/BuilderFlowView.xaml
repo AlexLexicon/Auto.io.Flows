@@ -46,17 +46,27 @@
                         </ComboBox>
                     </DockPanel>
                 </Border>
-                <Label 
+                <DockPanel 
                     DockPanel.Dock="Right"
                     Margin="0,0,6,0">
-                    <TextBlock>
-                        <TextBlock Text="to get Mouse Position: ("/><TextBlock
-                            d:Text="0"
-                            Text="{Binding MousePositionX}"/><TextBlock Text=","/><TextBlock
-                            d:Text="0"
-                            Text="{Binding MousePositionY}"/><TextBlock Text=")"/>
-                    </TextBlock>
-                </Label>
+                    <TextBox
+                        DockPanel.Dock="Right"
+                        IsReadOnly="True"
+                        Padding="2,0"
+                        d:Text="0"
+                        Text="{Binding MousePositionY}"/>
+                    <TextBox
+                        DockPanel.Dock="Right"
+                        IsReadOnly="True"
+                        Padding="2,0"
+                        d:Text="0"
+                        Text="{Binding MousePositionX}"/>
+                    <Label>
+                        <TextBlock>
+                            <TextBlock Text="to get Mouse Position: "/>
+                        </TextBlock>
+                    </Label>
+                </DockPanel>
                 <ComboBox 
                     DockPanel.Dock="Right"
                     Margin="1,0,2,0"

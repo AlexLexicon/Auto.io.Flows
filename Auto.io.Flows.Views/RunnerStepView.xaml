@@ -9,7 +9,8 @@
     xmlns:vc="clr-namespace:Auto.io.Flows.Views.Controls"
     mc:Ignorable="d" 
     d:DataContext="{d:DesignInstance vm:RunnerStepViewModel}"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    Loaded="UserControl_Loaded">
 
     <Border
         BorderThickness="1"

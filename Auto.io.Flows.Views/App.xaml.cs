@@ -27,6 +27,7 @@ public partial class App : System.Windows.Application
         builder.Services.AddApplication();
 
         builder.Services.AddSingleton<WindowsHookService>();
+        builder.Services.AddSingleton<WindowsInputService>();
 
         builder.Services.AddSingleton<IFileService, WindowsFileService>();
         builder.Services.AddSingleton<IBuilderParameterFactory, BuilderParameterFactory>();
@@ -38,8 +39,8 @@ public partial class App : System.Windows.Application
         builder.Services.AddDataContext<BuilderParameterComboBoxViewModel>();
         builder.Services.AddDataContext<BuilderParameterTextBoxViewModel>();
         builder.Services.AddDataContext<BuilderStepViewModel>();
-        builder.Services.AddDataContext<MainViewModel>().ForElement<MainView>();
-        builder.Services.AddDataContext<PopupViewModel>().ForElement<PopupView>();
+        builder.Services.AddDataContext<MainViewModel>().WithHostElement<MainView>();
+        builder.Services.AddDataContext<PopupViewModel>().WithHostElement<PopupView>();
 
         WpfApplication app = builder.Build();
 

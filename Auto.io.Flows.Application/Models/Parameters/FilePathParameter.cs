@@ -1,6 +1,9 @@
 ﻿namespace Auto.io.Flows.Application.Models.Parameters;
 public class FilePathParameter : IParameter
 {
+    public const string PATH_INPUT_MANUAL = "Manual";
+    public const string PATH_INPUT_NEWEST_SUB_DIRECTORY = "Newest Modified Sub Directory";
+
     public string Identifier => "FilePathV1";
     public UserInterfaces UserInterface => UserInterfaces.FilePathBrowser;
     public required object? Argument { get; init; }

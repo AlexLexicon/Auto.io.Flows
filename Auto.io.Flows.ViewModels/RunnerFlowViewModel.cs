@@ -1,8 +1,15 @@
 ﻿using Auto.io.Flows.Application.Models;
 using Auto.io.Flows.Application.Services;
+using Auto.io.Flows.ViewModels.Configurations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Lexicon.Common.Wpf.DependencyInjection.Abstractions.Services;
+using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Services;
+using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Settings;
 using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions.Factories;
+using Microsoft.Extensions.Options;
+using System.Collections.ObjectModel;
+using System.IO;
 
 namespace Auto.io.Flows.ViewModels;
 public partial class RunnerFlowViewModel : ObservableObject, IDisposable
@@ -24,12 +31,20 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
     private readonly IDataContextFactory _dataContextFactory;
     private readonly IKeyboardService _keyboardService;
     private readonly IParameterService _parameterService;
+    private readonly IWindowsDialogService _windowsDialogService;
+    private readonly IOptionsMonitor<FileConfiguration> _fileOptions;
+    private readonly ISettingsService _settingsService;
+    private readonly IFlowService _flowService;
 
     public RunnerFlowViewModel(
         Flow flow,
         IDataContextFactory dataContextFactory,
         IKeyboardService keyboardService,
-        IParameterService parameterService)
+        IParameterService parameterService,
+        IWindowsDialogService windowsDialogService,
+        IOptionsMonitor<FileConfiguration> fileOptions,
+        ISettingsService settingsService,
+        IFlowService flowService)
     {
         _keyboardHandlerId = Guid.NewGuid();
 
@@ -37,8 +52,12 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
         _dataContextFactory = dataContextFactory;
         _keyboardService = keyboardService;
         _parameterService = parameterService;
+        _windowsDialogService = windowsDialogService;
+        _fileOptions = fileOptions;
+        _settingsService = settingsService;
+        _flowService = flowService;
 
-        RunnerStepViewModels = new List<RunnerStepViewModel>();
+        RunnerStepViewModels = new ObservableCollection<RunnerStepViewModel>();
         if (_flow.Steps is not null)
         {
             foreach (FlowStep step in _flow.Steps)
@@ -73,7 +92,7 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
     private bool _isRunnable;
 
     [ObservableProperty]
-    private List<RunnerStepViewModel> _runnerStepViewModels = null!;
+    private ObservableCollection<RunnerStepViewModel> _runnerStepViewModels = null!;
 
     private bool _isRunning;
     public bool IsRunning
@@ -159,6 +178,37 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private void LoadAppend()
+    {
+        FileConfiguration fileConfiguration = _fileOptions.CurrentValue;
+
+        string? filePath = _windowsDialogService.OpenFile(new OpenFileSettings
+        {
+            InitialDirectory = fileConfiguration.SaveFileDirectory,
+        });
+
+        if (filePath is not null)
+        {
+            var fileInfo = new FileInfo(filePath);
+
+            fileConfiguration.SaveFileDirectory = fileInfo.DirectoryName;
+
+            _settingsService.BindAndSave(fileConfiguration);
+
+            Flow flow = _flowService.LoadFlow(filePath);
+            if (flow.Steps is not null)
+            {
+                foreach (FlowStep step in flow.Steps)
+                {
+                    var runnerStepViewModel = _dataContextFactory.Create<RunnerStepViewModel, FlowStep>(step);
+
+                    RunnerStepViewModels.Add(runnerStepViewModel);
+                }
+            }
+        }
+    }
+
+    [RelayCommand]
     private void StopHotKeySelected()
     {
         if (!_isDisposed)
@@ -210,9 +260,10 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
                 stepViewModel.State = RunnerStepViewModel.STATE_NOTSTARTED;
             }
 
-            int stepDelayMillisecondsMinimum = 125;
+            int stepDelayMillisecondsMinimum = 50;
             int stepDelayMilliseconds = SelectedStepDelay switch
             {
+                STEP_DELAY_EIGHT_SECONDS => 125,
                 STEP_DELAY_FORTH_SECONDS => 250,
                 STEP_DELAY_HALF_SCEONDS => 500,
                 STEP_DELAY_1_SECONDS => 1000,
@@ -237,6 +288,8 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
                 runnerStepViewModel.State = RunnerStepViewModel.STATE_WAITING;
                 int delay = isSkipping ? stepDelayMillisecondsMinimum : stepDelayMilliseconds;
                 await Task.Delay(delay);
+
+                runnerStepViewModel.BringIntoViewCommand?.Execute(null);
 
                 if (!isSkipping)
                 {
