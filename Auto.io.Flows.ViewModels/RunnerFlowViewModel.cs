@@ -8,6 +8,8 @@ using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Services;
 using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Settings;
 using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions.Factories;
 using Microsoft.Extensions.Options;
+using Microsoft.VisualBasic;
+using System;
 using System.Collections.ObjectModel;
 
 namespace Auto.io.Flows.ViewModels;
@@ -85,6 +87,7 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
         SelectedStepDelay = StepDelays.First();
         UpdateIterationsTextEnabled();
         Update();
+        PauseText = "Pause";
     }
 
     [ObservableProperty]
@@ -162,6 +165,9 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _selectedStepDelay = null!;
 
+    [ObservableProperty]
+    private bool _isPauseEnabled;
+
     private bool IsToggleHotKeyPressed { get; set; }
 
     private void UpdateIterationsTextEnabled()
@@ -216,13 +222,14 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
             {
                 _keyboardService.RegisterKeyReleased(_keyboardHandlerId, SelectedToggleHotKey, async () =>
                 {
-                    if (IsRunning && !IsStopping)
+                    bool isPaused = Runner is not null && Runner.IsPaused;
+
+                    if (IsRunning)
                     {
                         IsToggleHotKeyPressed = true;
-                        IsStopping = true;
-                        Update();
+                        await Pause();
                     }
-                    else if (!IsRunning)
+                    else if (!IsRunning && !IsStopping && !isPaused)
                     {
                         await RunAsync();
                     }
@@ -231,17 +238,35 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
         }
     }
 
+    [ObservableProperty]
+    private string? _pauseText;
+
     [RelayCommand]
-    private void Stop()
+    private async Task Pause()
     {
-        IsStopping = true;
+        if (Runner is not null)
+        {
+            await Runner.TogglePause();
+        }
         Update();
     }
 
     [RelayCommand]
+    private async Task Stop()
+    {
+        IsStopping = true;
+        if (Runner is not null)
+        {
+            await Runner.Stop();
+        }
+        Update();
+    }
+
+    private TheRunner? Runner { get; set; }
+    [RelayCommand]
     private async Task RunAsync()
     {
-        if (IsIterationsTextValid)
+        if (IsIterationsTextValid && !IsRunning)
         {
             IsRunning = true;
             Update();
@@ -254,12 +279,6 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
                 maxIterations = 0;
             }
 
-            foreach (RunnerStepViewModel stepViewModel in RunnerStepViewModels)
-            {
-                stepViewModel.State = RunnerStepViewModel.STATE_NOTSTARTED;
-            }
-
-            int stepDelayMillisecondsMinimum = 50;
             int stepDelayMilliseconds = SelectedStepDelay switch
             {
                 STEP_DELAY_EIGHT_SECONDS => 125,
@@ -270,79 +289,27 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
                 STEP_DELAY_10_SECONDS => 10000,
                 STEP_DELAY_15_SECONDS => 15000,
                 STEP_DELAY_30_SECONDS => 30000,
-                _ => stepDelayMillisecondsMinimum,
+                _ => 0,
             };
 
-            int iteration = 0;
-            _parameterService.SetVariable(IParameterService.KEY_ITERATION, iteration.ToString());
-            int index = 0;
-            bool isSkipping = false;
-            bool isComplete = false;
-            while (!isComplete)
+            Runner = new TheRunner(RunnerStepViewModels, maxIterations, stepDelayMilliseconds, async runner =>
             {
-                CurrentIterationText = $"{iteration + 1}/{maxIterations}";
-
-                var runnerStepViewModel = RunnerStepViewModels[index];
-
-                runnerStepViewModel.State = RunnerStepViewModel.STATE_WAITING;
-                int delay = isSkipping ? stepDelayMillisecondsMinimum : stepDelayMilliseconds;
-                await Task.Delay(delay);
-
-                runnerStepViewModel.BringIntoViewCommand?.Execute(null);
-
-                if (!isSkipping)
+                _parameterService.SetVariable(IParameterService.KEY_ITERATION, runner.Iteration.ToString());
+                CurrentIterationText = $"{runner.Iteration + 1}/{maxIterations}";
+                if (runner.IsStopping)
                 {
-
-                    bool success = await runnerStepViewModel.RunAsync();
-
-                    if (!success)
-                    {
-                        Stop();
-                    }
+                    await Stop();
                 }
-                else
-                {
-                    runnerStepViewModel.State = RunnerStepViewModel.STATE_SKIPPED;
-                }
+            }, IsInfinite, () =>
+            {
+                IsToggleHotKeyPressed = false;
+                IsStopping = false;
+                IsRunning = false;
+                Update();
+            });
 
-                index++;
-
-                if (IsToggleHotKeyPressed || IsStopping)
-                {
-                    isSkipping = true;
-                }
-
-                if (index >= RunnerStepViewModels.Count)
-                {
-                    if (!isSkipping && (IsInfinite || iteration < maxIterations))
-                    {
-                        index = 0;
-                        iteration++;
-                        _parameterService.SetVariable(IParameterService.KEY_ITERATION, iteration.ToString());
-                    }
-
-                    if (iteration >= maxIterations && !IsInfinite)
-                    {
-                        isSkipping = true;
-                    }
-
-                    if (isSkipping)
-                    {
-                        isComplete = true;
-                    }
-                    else
-                    {
-                        foreach (RunnerStepViewModel stepViewModel in RunnerStepViewModels)
-                        {
-                            stepViewModel.State = RunnerStepViewModel.STATE_NOTSTARTED;
-                        }
-                    }
-                }
-            }
-
-            IsToggleHotKeyPressed = false;
-            IsStopping = false;
-            IsRunning = false;
+            await Runner.SetupAsync();
+            await Runner.StartAsync();
         }
 
         Update();
@@ -355,11 +322,167 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
         IsToggleHotKeysEnabled = !IsRunning;
         IsInfiniteEnabled = !IsRunning;
         IsStopEnabled = IsRunning && !IsStopping;
+        IsPauseEnabled = IsRunning && !IsStopping;
+        if (Runner is not null)
+        {
+            PauseText = Runner.IsPaused ? "UnPause" : "Pause";
+        }
     }
 
     private void OnIterationsTextChanged()
     {
         IsIterationsTextValid = IsInfinite || IterationsText is not null && IterationsText.All(DIGITS.Contains);
         Update();
+    }
+
+    private class TheRunner
+    {
+        private const int STEPDELAYMILLISECONDSMINIMUM = 50;
+
+        private readonly ObservableCollection<RunnerStepViewModel> _runnerStepViewModels;
+        private readonly int _maxIterations;
+        private readonly int _stepDelayMilliseconds;
+        private readonly Func<TheRunner, Task> _callBack;
+        private readonly bool _isInfinite;
+        private readonly Action _completed;
+
+        public TheRunner(
+            ObservableCollection<RunnerStepViewModel> runnerStepViewModels,
+            int maxIterations,
+            int stepDelayMilliseconds,
+            Func<TheRunner, Task> callback,
+            bool isInfinite,
+            Action completed)
+        {
+            _runnerStepViewModels = runnerStepViewModels;
+            _maxIterations = maxIterations;
+            _stepDelayMilliseconds = stepDelayMilliseconds;
+            _callBack = callback;
+            _isInfinite = isInfinite;
+            _completed = completed;
+        }
+
+        public Task SetupAsync()
+        {
+            foreach (RunnerStepViewModel stepViewModel in _runnerStepViewModels)
+            {
+                stepViewModel.State = RunnerStepViewModel.STATE_NOTSTARTED;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public async Task StartAsync()
+        {
+            await NextAsync();
+        }
+
+        public async Task TogglePause()
+        {
+            IsPaused = !IsPaused;
+            if (!IsPaused)
+            {
+                await NextAsync();
+            }
+        }
+
+        public async Task Stop()
+        {
+            if (!IsStopping)
+            {
+                IsStopping = true;
+                if (IsPaused)
+                {
+                    IsPaused = false;
+                    await NextAsync();
+                }
+            }
+        }
+
+        public bool IsStopping { get; private set; }
+
+        public int Index { get; private set; }
+        public bool IsSkipping { get; private set; }
+        public bool IsComplete { get; private set; }
+        public int Iteration { get; private set; }
+
+        public bool IsPaused { get; private set; }
+
+        private bool _isNexting = false;
+        private async Task NextAsync()
+        {
+            if (!_isNexting)
+            {
+                _isNexting = true;
+
+                await _callBack.Invoke(this);
+
+                var runnerStepViewModel = _runnerStepViewModels[Index];
+
+                runnerStepViewModel.State = RunnerStepViewModel.STATE_WAITING;
+                int delay = IsSkipping ? STEPDELAYMILLISECONDSMINIMUM : _stepDelayMilliseconds;
+                await Task.Delay(delay);
+
+                runnerStepViewModel.BringIntoViewCommand?.Execute(null);
+
+                if (!IsSkipping)
+                {
+                    bool success = await runnerStepViewModel.RunAsync();
+
+                    if (!success)
+                    {
+                        IsStopping = true;
+                    }
+                }
+                else
+                {
+                    runnerStepViewModel.State = RunnerStepViewModel.STATE_SKIPPED;
+                }
+
+                Index++;
+
+                if (IsStopping)
+                {
+                    IsSkipping = true;
+                }
+
+                if (Index >= _runnerStepViewModels.Count)
+                {
+                    if (!IsSkipping && (_isInfinite || Iteration < _maxIterations))
+                    {
+                        Index = 0;
+                        Iteration++;
+                    }
+
+                    if (Iteration >= _maxIterations && !_isInfinite)
+                    {
+                        IsSkipping = true;
+                    }
+
+                    if (IsSkipping)
+                    {
+                        IsComplete = true;
+                    }
+                    else
+                    {
+                        foreach (RunnerStepViewModel stepViewModel in _runnerStepViewModels)
+                        {
+                            stepViewModel.State = RunnerStepViewModel.STATE_NOTSTARTED;
+                        }
+                    }
+                }
+
+                _isNexting = false;
+            }
+
+            if (!IsComplete && !IsPaused)
+            {
+                await NextAsync();
+            }
+            else if (IsComplete)
+            {
+                _completed.Invoke();
+            }
+        }
     }
 }
