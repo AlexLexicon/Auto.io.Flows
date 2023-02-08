@@ -13,7 +13,7 @@ public class SetClipboardStep : IStep
         _keyboardService = keyboardService;
     }
 
-    public string Identifier => "SetClipboardV1";
+    public string Identifier => "SetClipboard";
     public string Description => "Sets the clipboard text to a provided value.";
     public IReadOnlyList<IParameter> Parameters => new List<IParameter>
     {

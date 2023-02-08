@@ -12,7 +12,7 @@ public class MouseMoveStep : IStep
         _mouseService = mouseService;
     }
 
-    public string Identifier => "MouseMoveV1";
+    public string Identifier => "MouseMove";
     public string Description => "Moves the mouse cursor to the provied X and Y coordinate on the screen.";
 
     public IReadOnlyList<IParameter> Parameters => new List<IParameter>

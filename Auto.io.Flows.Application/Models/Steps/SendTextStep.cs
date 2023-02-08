@@ -15,7 +15,7 @@ public class SendTextStep : IStep
         _parameterService = parameterService;
     }
 
-    public string Identifier => "SendTextV1";
+    public string Identifier => "SendText";
     public string Description => "Sends the text as keyboard key strokes.";
     public IReadOnlyList<IParameter> Parameters => new List<IParameter>
     {

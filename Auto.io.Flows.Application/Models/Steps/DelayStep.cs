@@ -3,7 +3,7 @@
 namespace Auto.io.Flows.Application.Models.Steps;
 public class DelayStep : IStep
 {
-    public string Identifier => "DelayV1";
+    public string Identifier => "Delay";
     public string Description => "Waits the provided number of Milliseconds.";
     public IReadOnlyList<IParameter> Parameters => new List<IParameter>
     {

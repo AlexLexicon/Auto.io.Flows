@@ -15,7 +15,7 @@ public class ScreenshotStep : IStep
         _parameterService = parameterService;
     }
 
-    public string Identifier => "ScreenshotV1";
+    public string Identifier => "Screenshot";
     public string Description => "Creates a screenshot image from the provided rect region.";
 
     public IReadOnlyList<IParameter> Parameters => new List<IParameter>

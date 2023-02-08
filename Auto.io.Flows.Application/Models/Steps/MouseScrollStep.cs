@@ -11,7 +11,7 @@ public class MouseScrollStep : IStep
         _mouseService = mouseService;
     }
 
-    public string Identifier => "MouseScrollV1";
+    public string Identifier => "MouseScroll";
     public string Description => "Scrolls the mouse wheel";
     public IReadOnlyList<IParameter> Parameters => new List<IParameter>
     {

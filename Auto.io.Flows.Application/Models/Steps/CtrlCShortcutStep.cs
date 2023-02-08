@@ -10,7 +10,7 @@ public class CtrlCShortcutStep : IStep
         _keyboardService = keyboardService;
     }
 
-    public string Identifier => "CtrlCShortcutV1";
+    public string Identifier => "CtrlCShortcut";
     public string Description => "Simulates a Ctrl+C keyboard shortcut";
     public IReadOnlyList<IParameter> Parameters => new List<IParameter>();
 

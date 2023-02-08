@@ -2,16 +2,16 @@
 using Auto.io.Flows.Application.Services;
 
 namespace Auto.io.Flows.Application.Models.Steps;
-public class MouseButtonPressStep : IStep
+public class MouseButtonClickStep : IStep
 {
     private IMouseService _mouseService;
 
-    public MouseButtonPressStep(IMouseService mouseService)
+    public MouseButtonClickStep(IMouseService mouseService)
     {
         _mouseService = mouseService;
     }
 
-    public string Identifier => "MouseButtonPress";
+    public string Identifier => "MouseButtonClick";
     public string Description => "Presses down on the provided mouse button.";
     public IReadOnlyList<IParameter> Parameters => new List<IParameter>
     {
@@ -28,10 +28,12 @@ public class MouseButtonPressStep : IStep
         if (mouseButton == IMouseService.MOUSE_BUTTONS_LEFT)
         {
             _mouseService.PressLeftMouseButton();
+            _mouseService.ReleaseLeftMouseButton();
         }
-        else if(mouseButton == IMouseService.MOUSE_BUTTONS_RIGHT)
+        else if (mouseButton == IMouseService.MOUSE_BUTTONS_RIGHT)
         {
             _mouseService.PressRightMouseButton();
+            _mouseService.ReleaseRightMouseButton();
         }
 
         return Task.CompletedTask;

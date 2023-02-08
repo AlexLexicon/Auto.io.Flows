@@ -29,6 +29,10 @@ public class MouseButtonReleaseStep : IStep
         {
             _mouseService.ReleaseLeftMouseButton();
         }
+        else if (mouseButton == IMouseService.MOUSE_BUTTONS_RIGHT)
+        {
+            _mouseService.ReleaseRightMouseButton();
+        }
 
         return Task.CompletedTask;
     }
