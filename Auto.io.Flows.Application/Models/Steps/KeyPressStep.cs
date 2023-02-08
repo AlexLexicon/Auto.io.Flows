@@ -13,7 +13,7 @@ public class KeyPressStep : IStep
         }
     };
 
-    public Task ExecuteAsync(IEnumerable<object?> parameters)
+    public Task ExecuteAsync(IRunner runner, IEnumerable<object?> parameters)
     {
         throw new NotImplementedException();
     }

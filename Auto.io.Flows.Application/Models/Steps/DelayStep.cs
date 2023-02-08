@@ -13,7 +13,7 @@ public class DelayStep : IStep
         }
     };
 
-    public async Task ExecuteAsync(IEnumerable<object?> parameters)
+    public async Task ExecuteAsync(IRunner runner, IEnumerable<object?> parameters)
     {
         string? parameterString = parameters.FirstOrDefault()?.ToString();
 

@@ -21,7 +21,7 @@ public class MouseButtonPressStep : IStep
         }
     };
 
-    public Task ExecuteAsync(IEnumerable<object?> parameters)
+    public Task ExecuteAsync(IRunner runner, IEnumerable<object?> parameters)
     {
         string? mouseButton = parameters.FirstOrDefault()?.ToString();
 

@@ -1,6 +1,7 @@
 ﻿using Auto.io.Flows.Application.Models;
 using Auto.io.Flows.Application.Services;
 using Auto.io.Flows.ViewModels.Configurations;
+using Auto.io.Flows.ViewModels.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Lexicon.Common.Wpf.DependencyInjection.Abstractions.Services;
@@ -262,7 +263,8 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
         Update();
     }
 
-    private TheRunner? Runner { get; set; }
+    private Runner? Runner { get; set; }
+
     [RelayCommand]
     private async Task RunAsync()
     {
@@ -292,7 +294,7 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
                 _ => 0,
             };
 
-            Runner = new TheRunner(RunnerStepViewModels, maxIterations, stepDelayMilliseconds, async runner =>
+            Runner = new Runner(RunnerStepViewModels, maxIterations, stepDelayMilliseconds, async runner =>
             {
                 _parameterService.SetVariable(IParameterService.KEY_ITERATION, runner.Iteration.ToString());
                 CurrentIterationText = $"{runner.Iteration + 1}/{maxIterations}";
@@ -309,6 +311,7 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
             });
 
             await Runner.SetupAsync();
+
             await Runner.StartAsync();
         }
 
@@ -333,156 +336,5 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
     {
         IsIterationsTextValid = IsInfinite || IterationsText is not null && IterationsText.All(DIGITS.Contains);
         Update();
-    }
-
-    private class TheRunner
-    {
-        private const int STEPDELAYMILLISECONDSMINIMUM = 50;
-
-        private readonly ObservableCollection<RunnerStepViewModel> _runnerStepViewModels;
-        private readonly int _maxIterations;
-        private readonly int _stepDelayMilliseconds;
-        private readonly Func<TheRunner, Task> _callBack;
-        private readonly bool _isInfinite;
-        private readonly Action _completed;
-
-        public TheRunner(
-            ObservableCollection<RunnerStepViewModel> runnerStepViewModels,
-            int maxIterations,
-            int stepDelayMilliseconds,
-            Func<TheRunner, Task> callback,
-            bool isInfinite,
-            Action completed)
-        {
-            _runnerStepViewModels = runnerStepViewModels;
-            _maxIterations = maxIterations;
-            _stepDelayMilliseconds = stepDelayMilliseconds;
-            _callBack = callback;
-            _isInfinite = isInfinite;
-            _completed = completed;
-        }
-
-        public Task SetupAsync()
-        {
-            foreach (RunnerStepViewModel stepViewModel in _runnerStepViewModels)
-            {
-                stepViewModel.State = RunnerStepViewModel.STATE_NOTSTARTED;
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public async Task StartAsync()
-        {
-            await NextAsync();
-        }
-
-        public async Task TogglePause()
-        {
-            IsPaused = !IsPaused;
-            if (!IsPaused)
-            {
-                await NextAsync();
-            }
-        }
-
-        public async Task Stop()
-        {
-            if (!IsStopping)
-            {
-                IsStopping = true;
-                if (IsPaused)
-                {
-                    IsPaused = false;
-                    await NextAsync();
-                }
-            }
-        }
-
-        public bool IsStopping { get; private set; }
-
-        public int Index { get; private set; }
-        public bool IsSkipping { get; private set; }
-        public bool IsComplete { get; private set; }
-        public int Iteration { get; private set; }
-
-        public bool IsPaused { get; private set; }
-
-        private bool _isNexting = false;
-        private async Task NextAsync()
-        {
-            if (!_isNexting)
-            {
-                _isNexting = true;
-
-                await _callBack.Invoke(this);
-
-                var runnerStepViewModel = _runnerStepViewModels[Index];
-
-                runnerStepViewModel.State = RunnerStepViewModel.STATE_WAITING;
-                int delay = IsSkipping ? STEPDELAYMILLISECONDSMINIMUM : _stepDelayMilliseconds;
-                await Task.Delay(delay);
-
-                runnerStepViewModel.BringIntoViewCommand?.Execute(null);
-
-                if (!IsSkipping)
-                {
-                    bool success = await runnerStepViewModel.RunAsync();
-
-                    if (!success)
-                    {
-                        IsStopping = true;
-                    }
-                }
-                else
-                {
-                    runnerStepViewModel.State = RunnerStepViewModel.STATE_SKIPPED;
-                }
-
-                Index++;
-
-                if (IsStopping)
-                {
-                    IsSkipping = true;
-                }
-
-                if (Index >= _runnerStepViewModels.Count)
-                {
-                    if (!IsSkipping && (_isInfinite || Iteration < _maxIterations))
-                    {
-                        Index = 0;
-                        Iteration++;
-                    }
-
-                    if (Iteration >= _maxIterations && !_isInfinite)
-                    {
-                        IsSkipping = true;
-                    }
-
-                    if (IsSkipping)
-                    {
-                        IsComplete = true;
-                    }
-                    else
-                    {
-                        foreach (RunnerStepViewModel stepViewModel in _runnerStepViewModels)
-                        {
-                            stepViewModel.State = RunnerStepViewModel.STATE_NOTSTARTED;
-                        }
-                    }
-                }
-
-                _isNexting = false;
-            }
-
-            if (!IsComplete && !IsPaused)
-            {
-                await NextAsync();
-            }
-            else if (IsComplete)
-            {
-                _completed.Invoke();
-            }
-        }
     }
 }

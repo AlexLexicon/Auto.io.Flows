@@ -8,7 +8,7 @@ public interface IFlowService
     void SaveFlow(string filePath, Flow stepDefinitions);
     Flow LoadFlow(string filePath);
     FlowStep CreateStep(IStep step, IEnumerable<FlowParameter?> parameters);
-    Task Excute(Flow flow);
+    //Task Excute(Flow flow);
 }
 public class FlowService : IFlowService
 {
@@ -53,27 +53,27 @@ public class FlowService : IFlowService
         };
     }
 
-    public async Task Excute(Flow flow)
-    {
-        if (flow.Steps is not null)
-        {
-            foreach (FlowStep flowStep in flow.Steps)
-            {
-                string identifier = flowStep.Identifer;
+    //public async Task Excute(Flow flow)
+    //{
+    //    if (flow.Steps is not null)
+    //    {
+    //        foreach (FlowStep flowStep in flow.Steps)
+    //        {
+    //            string identifier = flowStep.Identifer;
 
-                IStep step = _stepService.GetStepByIdentifier(identifier);
+    //            IStep step = _stepService.GetStepByIdentifier(identifier);
 
-                var parameters = new List<object?>();
-                foreach (FlowParameter? flowParameter in flowStep.Parameters)
-                {
-                    if (flowParameter is not null)
-                    {
-                        parameters.Add(flowParameter.Value);
-                    }
-                }
+    //            var parameters = new List<object?>();
+    //            foreach (FlowParameter? flowParameter in flowStep.Parameters)
+    //            {
+    //                if (flowParameter is not null)
+    //                {
+    //                    parameters.Add(flowParameter.Value);
+    //                }
+    //            }
 
-                await step.ExecuteAsync(parameters);
-            }
-        }
-    }
+    //            await step.ExecuteAsync(parameters);
+    //        }
+    //    }
+    //}
 }

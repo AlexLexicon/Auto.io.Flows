@@ -44,7 +44,7 @@ public class ScreenshotStep : IStep
         }
     };
 
-    public Task ExecuteAsync(IEnumerable<object?> parameters)
+    public Task ExecuteAsync(IRunner runner, IEnumerable<object?> parameters)
     {
         string? x1String = parameters.ElementAtOrDefault(0)?.ToString();
         string? y1String = parameters.ElementAtOrDefault(1)?.ToString();

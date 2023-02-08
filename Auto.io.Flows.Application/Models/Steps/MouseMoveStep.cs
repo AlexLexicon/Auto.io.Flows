@@ -27,7 +27,7 @@ public class MouseMoveStep : IStep
         },
     };
 
-    public Task ExecuteAsync(IEnumerable<object?> parameters)
+    public Task ExecuteAsync(IRunner runner, IEnumerable<object?> parameters)
     {
         string? xString = parameters.ElementAtOrDefault(0)?.ToString();
         string? yString = parameters.ElementAtOrDefault(1)?.ToString();

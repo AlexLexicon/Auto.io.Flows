@@ -90,7 +90,7 @@ public partial class RunnerStepViewModel : ObservableObject
         }
     }
 
-    public async Task<bool> RunAsync()
+    public async Task<bool> RunAsync(IRunner runner)
     {
         State = STATE_RUNNING;
 
@@ -102,7 +102,7 @@ public partial class RunnerStepViewModel : ObservableObject
             }
             else
             {
-                await _step.ExecuteAsync(_stepParameters);
+                await _step.ExecuteAsync(runner, _stepParameters);
 
                 State = STATE_SUCCEEDED;
             }

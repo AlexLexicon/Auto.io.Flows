@@ -14,7 +14,7 @@ public class CtrlVShortcutStep : IStep
     public string Description => "Simulates a Ctrl+V keyboard shortcut";
     public IReadOnlyList<IParameter> Parameters => new List<IParameter>();
 
-    public Task ExecuteAsync(IEnumerable<object?> parameters)
+    public Task ExecuteAsync(IRunner runner, IEnumerable<object?> parameters)
     {
         _keyboardService.CtrlVShortcut();
 

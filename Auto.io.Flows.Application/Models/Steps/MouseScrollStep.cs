@@ -21,7 +21,7 @@ public class MouseScrollStep : IStep
         }
     };
 
-    public Task ExecuteAsync(IEnumerable<object?> parameters)
+    public Task ExecuteAsync(IRunner runner, IEnumerable<object?> parameters)
     {
         string? amountString = parameters.FirstOrDefault()?.ToString();
 

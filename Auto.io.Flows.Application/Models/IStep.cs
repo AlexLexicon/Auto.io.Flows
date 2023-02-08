@@ -6,5 +6,5 @@ public interface IStep
 
     IReadOnlyList<IParameter> Parameters { get; }
 
-    Task ExecuteAsync(IEnumerable<object?> parameters);
+    Task ExecuteAsync(IRunner runner, IEnumerable<object?> parameters);
 }

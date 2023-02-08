@@ -14,7 +14,7 @@ public class CtrlCShortcutStep : IStep
     public string Description => "Simulates a Ctrl+C keyboard shortcut";
     public IReadOnlyList<IParameter> Parameters => new List<IParameter>();
 
-    public Task ExecuteAsync(IEnumerable<object?> parameters)
+    public Task ExecuteAsync(IRunner runner, IEnumerable<object?> parameters)
     {
         _keyboardService.CtrlCShortcut();
 
