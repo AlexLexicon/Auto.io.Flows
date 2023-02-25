@@ -49,6 +49,10 @@ public class Runner : IRunner
         IsPaused = !IsPaused;
         if (!IsPaused)
         {
+            if (CurrentViewModel is not null)
+            {
+                CurrentViewModel.State = RunnerStepViewModel.STATE_SUCCEEDED;
+            }
             await NextAsync();
         }
     }
@@ -79,6 +83,7 @@ public class Runner : IRunner
     public int Iteration { get; private set; }
 
     public bool IsPaused { get; private set; }
+    private RunnerStepViewModel? CurrentViewModel { get; set; }
 
     private bool _isNexting = false;
     private async Task NextAsync()
@@ -89,17 +94,17 @@ public class Runner : IRunner
 
             await _callBack.Invoke(this);
 
-            var runnerStepViewModel = _runnerStepViewModels[Index];
+            CurrentViewModel = _runnerStepViewModels[Index];
 
-            runnerStepViewModel.State = RunnerStepViewModel.STATE_WAITING;
+            CurrentViewModel.State = RunnerStepViewModel.STATE_WAITING;
             int delay = IsSkipping ? STEPDELAYMILLISECONDSMINIMUM : _stepDelayMilliseconds;
             await Task.Delay(delay);
 
-            runnerStepViewModel.BringIntoViewCommand?.Execute(null);
+            CurrentViewModel.BringIntoViewCommand?.Execute(null);
 
             if (!IsSkipping)
             {
-                bool success = await runnerStepViewModel.RunAsync(this);
+                bool success = await CurrentViewModel.RunAsync(this);
 
                 if (!success)
                 {
@@ -108,7 +113,7 @@ public class Runner : IRunner
             }
             else
             {
-                runnerStepViewModel.State = RunnerStepViewModel.STATE_SKIPPED;
+                CurrentViewModel.State = RunnerStepViewModel.STATE_SKIPPED;
             }
 
             Index++;

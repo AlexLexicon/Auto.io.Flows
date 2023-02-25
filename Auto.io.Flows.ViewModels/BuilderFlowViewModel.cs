@@ -126,6 +126,30 @@ public partial class BuilderFlowViewModel : ObservableObject, IDisposable
         }
     }
 
+    [RelayCommand]
+    private void Append()
+    {
+        FileConfiguration fileConfiguration = _fileOptions.CurrentValue;
+
+        string? filePath = _windowsDialogService.OpenFile(new OpenFileSettings
+        {
+            InitialDirectory = fileConfiguration.SaveFileDirectory,
+        });
+
+        if (filePath is not null)
+        {
+            var fileInfo = new FileInfo(filePath);
+
+            fileConfiguration.SaveFileDirectory = fileInfo.DirectoryName;
+
+            _settingsService.BindAndSave(fileConfiguration);
+
+            Flow flow = _flowService.LoadFlow(filePath);
+
+            LoadFlow(flow);
+        }
+    }
+
     private void OnSelectedMouseHotKeyChanged()
     {
         if (!_isDisposed)

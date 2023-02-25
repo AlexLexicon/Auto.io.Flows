@@ -104,7 +104,7 @@ public partial class RunnerStepViewModel : ObservableObject
             {
                 await _step.ExecuteAsync(runner, _stepParameters);
 
-                State = STATE_SUCCEEDED;
+                State = runner.IsPaused ? STATE_WAITING : STATE_SUCCEEDED;
             }
             return true;
         }

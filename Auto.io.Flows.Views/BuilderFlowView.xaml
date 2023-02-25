@@ -20,13 +20,20 @@
                 DockPanel.Dock="Top"
                 Height="24">
                 <Button
+                    Margin="6,0,3,0"
+                    Padding="6,0"
                     Content="Save"
                     IsEnabled="{Binding IsSavable}"
                     Command="{Binding SaveCommand}"/>
+                <Button
+                    Margin="3,0,3,0"
+                    Padding="6,0"
+                    Content="Append"
+                    Command="{Binding AppendCommand}"/>
                 <Border
                     BorderThickness="1"
                     BorderBrush="{StaticResource xBrushColorGrayLighter}"
-                    Margin="6,0">
+                    Margin="3,0">
                     <DockPanel>
                         <Button
                             DockPanel.Dock="Right"
