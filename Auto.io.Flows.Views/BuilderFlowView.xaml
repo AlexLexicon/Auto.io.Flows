@@ -35,15 +35,43 @@
                     BorderBrush="{StaticResource xBrushColorGrayLighter}"
                     Margin="3,0">
                     <DockPanel>
-                        <Button
+                        <Button 
                             DockPanel.Dock="Right"
                             BorderThickness="0"
-                            Padding="3"
+                            Padding="4,4,4,5"
                             Width="22"
-                            HorizontalContentAlignment="Stretch"
-                            VerticalContentAlignment="Stretch"
+                            Command="{Binding AddStepTopCommand}">
+                            <Image 
+                                Source="/images/play.full.a.256.png" 
+                                RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform/>
+                                        <RotateTransform Angle="270"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
+                        </Button>
+                        <Button 
+                            DockPanel.Dock="Right"
+                            BorderThickness="0"
+                            Padding="4,5,4,4"
+                            Width="22"
                             Command="{Binding AddStepCommand}">
-                            <c:ButtonForegroundImage ImageSource="images/add.circle.b.256.png"/>
+                            <Image 
+                                Source="/images/play.full.a.256.png" 
+                                RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform/>
+                                        <SkewTransform/>
+                                        <RotateTransform Angle="90"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </Image.RenderTransform>
+                            </Image>
                         </Button>
                         <ComboBox 
                             DockPanel.Dock="Right"

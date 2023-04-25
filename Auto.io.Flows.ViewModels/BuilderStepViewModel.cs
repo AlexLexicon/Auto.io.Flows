@@ -1,5 +1,4 @@
-﻿using Auto.io.Flows.Application;
-using Auto.io.Flows.Application.Models;
+﻿using Auto.io.Flows.Application.Models;
 using Auto.io.Flows.Application.Services;
 using Auto.io.Flows.ViewModels.Abstractions;
 using Auto.io.Flows.ViewModels.Factories;
@@ -13,6 +12,8 @@ public partial class BuilderStepViewModel : ObservableObject
     public event Action? Delete;
     public event Action? MoveUp;
     public event Action? MoveDown;
+    public event Action? MoveTop;
+    public event Action? MoveBottom;
 
     private readonly IStep _step;
     private readonly IBuilderParameterFactory _builderParameterFactory;
@@ -96,6 +97,18 @@ public partial class BuilderStepViewModel : ObservableObject
     private void OnMoveDown()
     {
         MoveDown?.Invoke();
+    }
+
+    [RelayCommand]
+    private void OnMoveTop()
+    {
+        MoveTop?.Invoke();
+    }
+
+    [RelayCommand]
+    private void OnMoveBottom()
+    {
+        MoveBottom?.Invoke();
     }
 
     [RelayCommand]

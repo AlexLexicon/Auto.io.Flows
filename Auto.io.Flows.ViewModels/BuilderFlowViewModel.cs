@@ -210,7 +210,17 @@ public partial class BuilderFlowViewModel : ObservableObject, IDisposable
         AddStep(step, null);
     }
 
-    private void AddStep(IStep step, Action<BuilderStepViewModel>? configure)
+    [RelayCommand]
+    private void AddStepTop()
+    {
+        IStep step = _stepService.GetStepByIdentifier(SelectedStepIdentifier);
+
+        var builderStepViewModel = AddStep(step, null);
+
+        MoveTop(builderStepViewModel);
+    }
+
+    private BuilderStepViewModel AddStep(IStep step, Action<BuilderStepViewModel>? configure)
     {
         var builderStepViewModel = _dataContextFactory.Create<BuilderStepViewModel, IStep>(step);
 
@@ -235,12 +245,16 @@ public partial class BuilderFlowViewModel : ObservableObject, IDisposable
         builderStepViewModel.Delete += () => DeleteStep(builderStepViewModel);
         builderStepViewModel.MoveUp += () => MoveStepUp(builderStepViewModel);
         builderStepViewModel.MoveDown += () => MoveStepDown(builderStepViewModel);
+        builderStepViewModel.MoveTop += () => MoveTop(builderStepViewModel);
+        builderStepViewModel.MoveBottom += () => MoveBottom(builderStepViewModel);
 
         configure?.Invoke(builderStepViewModel);
 
         BuilderStepViewModels.Add(builderStepViewModel);
 
         Update();
+
+        return builderStepViewModel;
     }
 
     private void DeleteStep(BuilderStepViewModel builderStepViewModel)
@@ -280,5 +294,17 @@ public partial class BuilderFlowViewModel : ObservableObject, IDisposable
         int newIndex = Math.Min(currentIndex + 1, BuilderStepViewModels.Count);
 
         BuilderStepViewModels.Insert(newIndex, builderStepViewModel);
+    }
+
+    private void MoveTop(BuilderStepViewModel builderStepViewModel)
+    {
+        BuilderStepViewModels.Remove(builderStepViewModel);
+        BuilderStepViewModels.Insert(0, builderStepViewModel);
+    }
+
+    private void MoveBottom(BuilderStepViewModel builderStepViewModel)
+    {
+        BuilderStepViewModels.Remove(builderStepViewModel);
+        BuilderStepViewModels.Add(builderStepViewModel);
     }
 }
