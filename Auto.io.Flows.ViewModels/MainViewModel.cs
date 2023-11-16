@@ -1,35 +1,34 @@
 ﻿using Auto.io.Flows.Application.Models;
 using Auto.io.Flows.Application.Services;
-using Auto.io.Flows.ViewModels.Configurations;
+using Auto.io.Flows.ViewModels.Options;
 using Auto.io.Flows.ViewModels.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Lexicon.Common.Wpf.DependencyInjection.Abstractions.Services;
-using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Services;
-using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Settings;
-using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions.Factories;
+using Lexicom.Configuration.Settings;
+using Lexicom.Mvvm;
+using Lexicom.Wpf.Amenities.Dialogs;
 using Microsoft.Extensions.Options;
 
 namespace Auto.io.Flows.ViewModels;
 public partial class MainViewModel : ObservableObject
 {
-    private readonly IDataContextFactory _dataContextFactory;
-    private readonly IWindowsDialogService _windowsDialogService;
-    private readonly IOptionsMonitor<FileConfiguration> _fileOptions;
-    private readonly ISettingsService _settingsService;
+    private readonly IViewModelFactory _viewModelFactory;
+    private readonly IWindowsDialog _windowsDialog;
+    private readonly IOptionsMonitor<FileDirectoryOptions> _fileDirectoryOptions;
+    private readonly ISettingsWriter _settingsWriter;
     private readonly IFlowService _flowService;
 
     public MainViewModel(
-        IDataContextFactory dataContextFactory,
-        IWindowsDialogService windowsDialogService,
-        IOptionsMonitor<FileConfiguration> fileOptions,
-        ISettingsService settingsService,
+        IViewModelFactory viewModelFactory,
+        IWindowsDialog windowsDialog,
+        IOptionsMonitor<FileDirectoryOptions> fileDirectoryOptions,
+        ISettingsWriter settingsWriter,
         IFlowService flowService)
     {
-        _dataContextFactory = dataContextFactory;
-        _windowsDialogService = windowsDialogService;
-        _fileOptions = fileOptions;
-        _settingsService = settingsService;
+        _viewModelFactory = viewModelFactory;
+        _windowsDialog = windowsDialog;
+        _fileDirectoryOptions = fileDirectoryOptions;
+        _settingsWriter = settingsWriter;
         _flowService = flowService;
     }
 
@@ -43,7 +42,7 @@ public partial class MainViewModel : ObservableObject
         {
             ContentViewModel?.Dispose();
 
-            ContentViewModel = _dataContextFactory.Create<BuilderFlowViewModel>();
+            ContentViewModel = _viewModelFactory.Create<BuilderFlowViewModel>();
         }
     }
 
@@ -52,9 +51,9 @@ public partial class MainViewModel : ObservableObject
     {
         if (ContentViewModel is null || PopupIsOk("Load Flow?", "Are you sure you want to load a flow? Any unsaved changes you have will be lost."))
         {
-            FileConfiguration fileConfiguration = _fileOptions.CurrentValue;
+            Options.FileDirectoryOptions fileConfiguration = _fileDirectoryOptions.CurrentValue;
 
-            string? filePath = _windowsDialogService.OpenFile(new OpenFileSettings
+            string? filePath = _windowsDialog.OpenFile(new OpenFileSettings
             {
                 InitialDirectory = fileConfiguration.SaveFileDirectory,
             });
@@ -65,13 +64,13 @@ public partial class MainViewModel : ObservableObject
 
                 fileConfiguration.SaveFileDirectory = fileInfo.DirectoryName;
 
-                _settingsService.BindAndSave(fileConfiguration);
+                _settingsWriter.SaveAndBind(fileConfiguration);
 
                 Flow flow = _flowService.LoadFlow(filePath);
 
                 ContentViewModel?.Dispose();
 
-                var builderFlowViewModel = _dataContextFactory.Create<BuilderFlowViewModel>();
+                var builderFlowViewModel = _viewModelFactory.Create<BuilderFlowViewModel>();
 
                 builderFlowViewModel.LoadFlow(flow);
 
@@ -85,9 +84,9 @@ public partial class MainViewModel : ObservableObject
     {
         if (ContentViewModel is null || PopupIsOk("Run Flow?", "Are you sure you want to run a flow? Any unsaved changes you have will be lost."))
         {
-            FileConfiguration fileConfiguration = _fileOptions.CurrentValue;
+            Options.FileDirectoryOptions fileConfiguration = _fileDirectoryOptions.CurrentValue;
 
-            string? filePath = _windowsDialogService.OpenFile(new OpenFileSettings
+            string? filePath = _windowsDialog.OpenFile(new OpenFileSettings
             {
                 InitialDirectory = fileConfiguration.SaveFileDirectory,
             });
@@ -98,13 +97,13 @@ public partial class MainViewModel : ObservableObject
 
                 fileConfiguration.SaveFileDirectory = fileInfo.DirectoryName;
 
-                _settingsService.BindAndSave(fileConfiguration);
+                _settingsWriter.SaveAndBind(fileConfiguration);
 
                 Flow flow = _flowService.LoadFlow(filePath);
 
                 ContentViewModel?.Dispose();
 
-                ContentViewModel = _dataContextFactory.Create<RunnerFlowViewModel, Flow>(flow);
+                ContentViewModel = _viewModelFactory.Create<RunnerFlowViewModel, Flow>(flow);
             }
         }
     }
@@ -113,7 +112,9 @@ public partial class MainViewModel : ObservableObject
     {
         var popup = new Popup(title, message, IsCancellable: true);
 
-        PopupViewModel popupViewModel = _dataContextFactory.Create<PopupViewModel, Popup>(popup);
+        PopupViewModel popupViewModel = _viewModelFactory.Create<PopupViewModel, Popup>(popup);
+
+        popupViewModel.Create();
 
         return popupViewModel.IsOk;
     }

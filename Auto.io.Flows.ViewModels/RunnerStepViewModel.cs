@@ -1,7 +1,7 @@
 ﻿using Auto.io.Flows.Application.Models;
 using Auto.io.Flows.Application.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions.Factories;
+using Lexicom.Mvvm;
 using System.Windows.Input;
 
 namespace Auto.io.Flows.ViewModels;
@@ -17,18 +17,18 @@ public partial class RunnerStepViewModel : ObservableObject
 
     private readonly FlowStep _flowStep;
     private readonly IStepService _stepService;
-    private readonly IDataContextFactory _dataContextFactory;
+    private readonly IViewModelFactory _viewModelFactory;
     private readonly IStep _step;
     private readonly IReadOnlyList<object?> _stepParameters;
 
     public RunnerStepViewModel(
         FlowStep flowStep,
         IStepService stepService,
-        IDataContextFactory dataContextFactory)
+        IViewModelFactory viewModelFactory)
     {
         _flowStep = flowStep;
         _stepService = stepService;
-        _dataContextFactory = dataContextFactory;
+        _viewModelFactory = viewModelFactory;
 
         string identifier = _flowStep.Identifer;
         _step = _stepService.GetStepByIdentifier(identifier);
@@ -44,7 +44,7 @@ public partial class RunnerStepViewModel : ObservableObject
             {
                 stepParameters.Add(flowParameter.Value);
                 IParameter parameter = _step.Parameters[index];
-                var runnerParameterViewModel = _dataContextFactory.Create<RunnerParameterViewModel, IParameter, FlowParameter>(parameter, flowParameter);
+                var runnerParameterViewModel = _viewModelFactory.Create<RunnerParameterViewModel, IParameter, FlowParameter>(parameter, flowParameter);
                 RunnerParameterViewModels.Add(runnerParameterViewModel);
             }
         }
@@ -108,7 +108,7 @@ public partial class RunnerStepViewModel : ObservableObject
             }
             return true;
         }
-        catch (Exception e)
+        catch
         {
             State = STATE_FAILED;
 

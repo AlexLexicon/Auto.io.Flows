@@ -4,7 +4,7 @@ using Auto.io.Flows.Application.Services;
 namespace Auto.io.Flows.Application.Models.Steps;
 public class MouseButtonReleaseStep : IStep
 {
-    private IMouseService _mouseService;
+    private readonly IMouseService _mouseService;
 
     public MouseButtonReleaseStep(IMouseService mouseService)
     {

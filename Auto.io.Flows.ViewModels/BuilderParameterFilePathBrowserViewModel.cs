@@ -1,25 +1,24 @@
 ﻿using Auto.io.Flows.Application.Models;
 using Auto.io.Flows.ViewModels.Abstractions;
-using Auto.io.Flows.ViewModels.Configurations;
+using Auto.io.Flows.ViewModels.Options;
 using CommunityToolkit.Mvvm.Input;
-using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Services;
-using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Settings;
+using Lexicom.Wpf.Amenities.Dialogs;
 using Microsoft.Extensions.Options;
 
 namespace Auto.io.Flows.ViewModels;
 public partial class BuilderParameterFilePathBrowserViewModel : BuilderParameterViewModel
 {
-    private readonly IWindowsDialogService _windowsDialogService;
-    private readonly IOptionsMonitor<FileConfiguration> _fileOptions;
+    private readonly IWindowsDialog _windowsDialog;
+    private readonly IOptionsMonitor<FileDirectoryOptions> _fileDirectoryOptions;
 
     public BuilderParameterFilePathBrowserViewModel(
         IParameter parameter,
-        IWindowsDialogService windowsDialogService,
-        IOptionsMonitor<FileConfiguration> fileOptions) : base(parameter)
+        IWindowsDialog windowsDialog,
+        IOptionsMonitor<FileDirectoryOptions> fileDirectoryOptions) : base(parameter)
     {
         Value = _parameter.InitalValue?.ToString();
-        _windowsDialogService = windowsDialogService;
-        _fileOptions = fileOptions;
+        _windowsDialog = windowsDialog;
+        _fileDirectoryOptions = fileDirectoryOptions;
     }
 
     private bool _isValueChanging = false;
@@ -60,9 +59,9 @@ public partial class BuilderParameterFilePathBrowserViewModel : BuilderParameter
     [RelayCommand]
     private void Browse()
     {
-        FileConfiguration fileConfiguration = _fileOptions.CurrentValue;
+        Options.FileDirectoryOptions fileConfiguration = _fileDirectoryOptions.CurrentValue;
 
-        string? filePath = _windowsDialogService.SaveFile(new SaveFileSettings
+        string? filePath = _windowsDialog.SaveFile(new SaveFileSettings
         {
             InitialDirectory = fileConfiguration.SaveFileDirectory,
             DefaultExtension = _parameter.Argument?.ToString() ?? "txt",

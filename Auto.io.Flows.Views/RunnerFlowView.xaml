@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:c="clr-namespace:Lexicon.Common.Wpf.Controls;assembly=Lexicon.Common.Wpf.Controls"
+    xmlns:c="clr-namespace:Lexicom.Wpf.Controls;assembly=Lexicom.Wpf.Controls"
     xmlns:v="clr-namespace:Auto.io.Flows.Views"
     xmlns:vm="clr-namespace:Auto.io.Flows.ViewModels;assembly=Auto.io.Flows.ViewModels"
     mc:Ignorable="d" 

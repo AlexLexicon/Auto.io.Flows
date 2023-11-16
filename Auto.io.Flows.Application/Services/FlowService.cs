@@ -13,14 +13,10 @@ public interface IFlowService
 public class FlowService : IFlowService
 {
     private readonly IFileService _fileService;
-    private readonly IStepService _stepService;
 
-    public FlowService(
-        IFileService fileService, 
-        IStepService stepService)
+    public FlowService(IFileService fileService)
     {
         _fileService = fileService;
-        _stepService = stepService;
     }
 
     public void SaveFlow(string filePath, Flow flow)

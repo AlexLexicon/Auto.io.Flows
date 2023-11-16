@@ -7,9 +7,10 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions" Version="7.0.49" />
-		<PackageReference Include="Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions" Version="7.0.49" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
+		<PackageReference Include="Lexicom.Concentrate.Wpf.Amenities.Abstractions" Version="7.0.30" />
+		<PackageReference Include="Lexicom.Configuration.Settings" Version="7.0.56" />
+		<PackageReference Include="Lexicom.Mvvm" Version="7.0.56" />
+		<PackageReference Include="Lexicom.Wpf.Amenities.Abstractions" Version="7.0.56" />
 	</ItemGroup>
 
 	<ItemGroup>

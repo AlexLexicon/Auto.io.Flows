@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IStepService, StepService>();
         services.AddSingleton<IParameterService, ParameterService>();
 
+        //todo
         List<TypeInfo> stepTypes = typeof(ServiceCollectionExtensions)
             .Assembly
             .DefinedTypes.Where(t => !t.IsAbstract && !t.IsInterface && t.IsAssignableTo(typeof(IStep)))

@@ -6,7 +6,6 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Lexicon.Common.Wpf.Controls;component/Resources/CommonWpfControlsResources.xaml"/>
                 <ResourceDictionary Source="/Auto.io.Flows.Views;component/Brushes.xaml"/>
                 <ResourceDictionary Source="/Auto.io.Flows.Views;component/Converters.xaml"/>
                 <ResourceDictionary Source="/Auto.io.Flows.Views;component/Styles/Buttons.xaml"/>

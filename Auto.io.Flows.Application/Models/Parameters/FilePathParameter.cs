@@ -25,7 +25,7 @@ public class FilePathParameter : IParameter
 
             return Directory.Exists(fileInfo.DirectoryName);
         }
-        catch (Exception e)
+        catch
         {
             return false;
         }

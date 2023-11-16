@@ -1,16 +1,13 @@
 ﻿using Auto.io.Flows.Application.Models;
 using Auto.io.Flows.Application.Services;
-using Auto.io.Flows.ViewModels.Configurations;
 using Auto.io.Flows.ViewModels.Models;
+using Auto.io.Flows.ViewModels.Options;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Lexicon.Common.Wpf.DependencyInjection.Abstractions.Services;
-using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Services;
-using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Settings;
-using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions.Factories;
+using Lexicom.Configuration.Settings;
+using Lexicom.Mvvm;
+using Lexicom.Wpf.Amenities.Dialogs;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualBasic;
-using System;
 using System.Collections.ObjectModel;
 
 namespace Auto.io.Flows.ViewModels;
@@ -30,33 +27,33 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
     private readonly Guid _keyboardHandlerId;
 
     private readonly Flow _flow;
-    private readonly IDataContextFactory _dataContextFactory;
+    private readonly IViewModelFactory _viewModelFactory;
     private readonly IKeyboardService _keyboardService;
     private readonly IParameterService _parameterService;
-    private readonly IWindowsDialogService _windowsDialogService;
-    private readonly IOptionsMonitor<FileConfiguration> _fileOptions;
-    private readonly ISettingsService _settingsService;
+    private readonly IWindowsDialog _windowsDialog;
+    private readonly IOptionsMonitor<FileDirectoryOptions> _fileDirectoryOptions;
+    private readonly ISettingsWriter _settingsWriter;
     private readonly IFlowService _flowService;
 
     public RunnerFlowViewModel(
         Flow flow,
-        IDataContextFactory dataContextFactory,
+        IViewModelFactory dataContextFactory,
         IKeyboardService keyboardService,
         IParameterService parameterService,
-        IWindowsDialogService windowsDialogService,
-        IOptionsMonitor<FileConfiguration> fileOptions,
-        ISettingsService settingsService,
+        IWindowsDialog windowsDialog,
+        IOptionsMonitor<FileDirectoryOptions> fileDirectoryOptions,
+        ISettingsWriter settingsWriter,
         IFlowService flowService)
     {
         _keyboardHandlerId = Guid.NewGuid();
 
         _flow = flow;
-        _dataContextFactory = dataContextFactory;
+        _viewModelFactory = dataContextFactory;
         _keyboardService = keyboardService;
         _parameterService = parameterService;
-        _windowsDialogService = windowsDialogService;
-        _fileOptions = fileOptions;
-        _settingsService = settingsService;
+        _windowsDialog = windowsDialog;
+        _fileDirectoryOptions = fileDirectoryOptions;
+        _settingsWriter = settingsWriter;
         _flowService = flowService;
 
         RunnerStepViewModels = new ObservableCollection<RunnerStepViewModel>();
@@ -64,7 +61,7 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
         {
             foreach (FlowStep step in _flow.Steps)
             {
-                var runnerStepViewModel = _dataContextFactory.Create<RunnerStepViewModel, FlowStep>(step);
+                var runnerStepViewModel = _viewModelFactory.Create<RunnerStepViewModel, FlowStep>(step);
 
                 RunnerStepViewModels.Add(runnerStepViewModel);
             }
@@ -186,9 +183,9 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void LoadAppend()
     {
-        FileConfiguration fileConfiguration = _fileOptions.CurrentValue;
+        Options.FileDirectoryOptions fileConfiguration = _fileDirectoryOptions.CurrentValue;
 
-        string? filePath = _windowsDialogService.OpenFile(new OpenFileSettings
+        string? filePath = _windowsDialog.OpenFile(new OpenFileSettings
         {
             InitialDirectory = fileConfiguration.SaveFileDirectory,
         });
@@ -199,14 +196,14 @@ public partial class RunnerFlowViewModel : ObservableObject, IDisposable
 
             fileConfiguration.SaveFileDirectory = fileInfo.DirectoryName;
 
-            _settingsService.BindAndSave(fileConfiguration);
+            _settingsWriter.SaveAndBind(fileConfiguration);
 
             Flow flow = _flowService.LoadFlow(filePath);
             if (flow.Steps is not null)
             {
                 foreach (FlowStep step in flow.Steps)
                 {
-                    var runnerStepViewModel = _dataContextFactory.Create<RunnerStepViewModel, FlowStep>(step);
+                    var runnerStepViewModel = _viewModelFactory.Create<RunnerStepViewModel, FlowStep>(step);
 
                     RunnerStepViewModels.Add(runnerStepViewModel);
                 }

@@ -1,14 +1,12 @@
-﻿using Auto.io.Flows.Application;
-using Auto.io.Flows.Application.Models;
+﻿using Auto.io.Flows.Application.Models;
 using Auto.io.Flows.Application.Models.Steps;
 using Auto.io.Flows.Application.Services;
-using Auto.io.Flows.ViewModels.Configurations;
+using Auto.io.Flows.ViewModels.Options;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Lexicon.Common.Wpf.DependencyInjection.Abstractions.Services;
-using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Services;
-using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Settings;
-using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions.Factories;
+using Lexicom.Configuration.Settings;
+using Lexicom.Mvvm;
+using Lexicom.Wpf.Amenities.Dialogs;
 using Microsoft.Extensions.Options;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -19,33 +17,33 @@ public partial class BuilderFlowViewModel : ObservableObject, IDisposable
 {
     private readonly Guid _keyboardHandlerId;
 
-    private readonly IDataContextFactory _dataContextFactory;
+    private readonly IViewModelFactory _viewModelFactory;
     private readonly IStepService _stepService;
-    private readonly IWindowsDialogService _windowsDialogService;
+    private readonly IWindowsDialog _windowsDialog;
     private readonly IFlowService _flowService;
-    private readonly IOptionsMonitor<FileConfiguration> _fileOptions;
-    private readonly ISettingsService _settingsService;
+    private readonly IOptionsMonitor<FileDirectoryOptions> _fileDirectoryOptions;
+    private readonly ISettingsWriter _settingsWriter;
     private readonly IMouseService _mouseService;
     private readonly IKeyboardService _keyboardService;
 
     public BuilderFlowViewModel(
-        IDataContextFactory dataContextFactory,
+        IViewModelFactory viewModelFactory,
         IStepService stepService,
-        IWindowsDialogService windowsDialogService,
+        IWindowsDialog windowsDialog,
         IFlowService flowService,
-        IOptionsMonitor<FileConfiguration> fileOptions,
-        ISettingsService settingsService,
+        IOptionsMonitor<FileDirectoryOptions> fileDirectoryOptions,
+        ISettingsWriter settingsWriter,
         IMouseService mouseService,
         IKeyboardService keyboardService)
     {
         _keyboardHandlerId = Guid.NewGuid();
 
-        _dataContextFactory = dataContextFactory;
+        _viewModelFactory = viewModelFactory;
         _stepService = stepService;
-        _windowsDialogService = windowsDialogService;
+        _windowsDialog = windowsDialog;
         _flowService = flowService;
-        _fileOptions = fileOptions;
-        _settingsService = settingsService;
+        _fileDirectoryOptions = fileDirectoryOptions;
+        _settingsWriter = settingsWriter;
         _mouseService = mouseService;
         _keyboardService = keyboardService;
 
@@ -129,9 +127,9 @@ public partial class BuilderFlowViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void Append()
     {
-        FileConfiguration fileConfiguration = _fileOptions.CurrentValue;
+        Options.FileDirectoryOptions fileConfiguration = _fileDirectoryOptions.CurrentValue;
 
-        string? filePath = _windowsDialogService.OpenFile(new OpenFileSettings
+        string? filePath = _windowsDialog.OpenFile(new OpenFileSettings
         {
             InitialDirectory = fileConfiguration.SaveFileDirectory,
         });
@@ -142,7 +140,7 @@ public partial class BuilderFlowViewModel : ObservableObject, IDisposable
 
             fileConfiguration.SaveFileDirectory = fileInfo.DirectoryName;
 
-            _settingsService.BindAndSave(fileConfiguration);
+            _settingsWriter.SaveAndBind(fileConfiguration);
 
             Flow flow = _flowService.LoadFlow(filePath);
 
@@ -170,9 +168,9 @@ public partial class BuilderFlowViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void OnSave()
     {
-        FileConfiguration fileConfiguration = _fileOptions.CurrentValue;
+        Options.FileDirectoryOptions fileConfiguration = _fileDirectoryOptions.CurrentValue;
 
-        string? filePath = _windowsDialogService.SaveFile(new SaveFileSettings
+        string? filePath = _windowsDialog.SaveFile(new SaveFileSettings
         {
             DefaultExtension = "json",
             InitialDirectory = fileConfiguration.SaveFileDirectory,
@@ -187,7 +185,7 @@ public partial class BuilderFlowViewModel : ObservableObject, IDisposable
 
             fileConfiguration.SaveFileDirectory = fileInfo.DirectoryName;
 
-            _settingsService.BindAndSave(fileConfiguration);
+            _settingsWriter.SaveAndBind(fileConfiguration);
 
             var flowSteps = new List<FlowStep>();
             foreach (BuilderStepViewModel builderStepViewModel in BuilderStepViewModels)
@@ -222,7 +220,7 @@ public partial class BuilderFlowViewModel : ObservableObject, IDisposable
 
     private BuilderStepViewModel AddStep(IStep step, Action<BuilderStepViewModel>? configure)
     {
-        var builderStepViewModel = _dataContextFactory.Create<BuilderStepViewModel, IStep>(step);
+        var builderStepViewModel = _viewModelFactory.Create<BuilderStepViewModel, IStep>(step);
 
         if (step is MouseMoveStep)
         {

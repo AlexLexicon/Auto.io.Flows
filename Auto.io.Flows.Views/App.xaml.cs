@@ -1,15 +1,20 @@
 ﻿using Auto.io.Flows.Application.Extensions;
 using Auto.io.Flows.Application.Services;
 using Auto.io.Flows.ViewModels;
-using Auto.io.Flows.ViewModels.Configurations;
 using Auto.io.Flows.ViewModels.Factories;
+using Auto.io.Flows.ViewModels.Options;
 using Auto.io.Flows.Views.Services;
-using Lexicon.Common.DependencyInjection.Extensions;
-using Lexicon.Common.Wpf.DependencyInjection;
-using Lexicon.Common.Wpf.DependencyInjection.Amenities.Abstractions.Services;
-using Lexicon.Common.Wpf.DependencyInjection.Amenities.Extensions;
-using Lexicon.Common.Wpf.DependencyInjection.Extensions;
-using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Extensions;
+using Lexicom.Concentrate.Supports.Wpf.Extensions;
+using Lexicom.Concentrate.Wpf.Amenities.Extensions;
+using Lexicom.Configuration.Settings.Extensions;
+using Lexicom.Configuration.Settings.For.Wpf.Extensions;
+using Lexicom.DependencyInjection.Amenities.Extensions;
+using Lexicom.Mvvm.Extensions;
+using Lexicom.Mvvm.For.Wpf.Extensions;
+using Lexicom.Supports.Wpf.Extensions;
+using Lexicom.Validation.For.Wpf.Extensions;
+using Lexicom.Wpf.Amenities.Extensions;
+using Lexicom.Wpf.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Auto.io.Flows.Views;
@@ -18,11 +23,40 @@ public partial class App : System.Windows.Application
     public App()
     {
         WpfApplicationBuilder builder = WpfApplication.CreateBuilder(this);
-        builder.Configuration.AddSettings(builder.Services, Views.Properties.Settings.Default);
 
-        builder.Services.ConfigureAndBind<FileConfiguration>(builder.Configuration);
+        builder.Services
+            .AddOptions<FileDirectoryOptions>()
+            .BindConfiguration();
 
-        builder.Services.AddLexiconAmenities();
+        builder.Lexicom(options =>
+        {
+            options.AddAmenities();
+            options.AddSettings(Views.Properties.Settings.Default);
+            options.AddMvvm(options =>
+            {
+                options.AddViewModel<BuilderFlowViewModel>();
+                options.AddViewModel<BuilderParameterComboBoxViewModel>();
+                options.AddViewModel<BuilderParameterTextBoxViewModel>();
+                options.AddViewModel<BuilderParameterFilePathBrowserViewModel>();
+                options.AddViewModel<BuilderStepViewModel>();
+                options.AddViewModel<RunnerStepViewModel>();
+                options.AddViewModel<RunnerFlowViewModel>();
+                options.AddViewModel<RunnerParameterViewModel>();
+                options.AddViewModel<MainViewModel>(options =>
+                {
+                    options.ForWindow<MainView>();
+                });
+                options.AddViewModel<PopupViewModel>(options =>
+                {
+                    options.ForWindow<PopupView>();
+                });
+            });
+            options.AddValidation();
+            options.Concentrate(options =>
+            {
+                options.AddAmenities();
+            });
+        });
 
         builder.Services.AddApplication();
 
@@ -35,15 +69,8 @@ public partial class App : System.Windows.Application
         builder.Services.AddSingleton<IKeyboardService, WindowsKeyboardService>();
         builder.Services.AddSingleton<IScreenService, WindowsScreenService>();
 
-        builder.Services.AddDataContext<BuilderFlowViewModel>();
-        builder.Services.AddDataContext<BuilderParameterComboBoxViewModel>();
-        builder.Services.AddDataContext<BuilderParameterTextBoxViewModel>();
-        builder.Services.AddDataContext<BuilderStepViewModel>();
-        builder.Services.AddDataContext<MainViewModel>().WithHostElement<MainView>();
-        builder.Services.AddDataContext<PopupViewModel>().WithHostElement<PopupView>();
-
         WpfApplication app = builder.Build();
 
-        app.CreateAndShow<MainViewModel>();
+        app.StartupWindow<MainView>();
     }
 }

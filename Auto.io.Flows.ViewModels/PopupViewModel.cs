@@ -1,11 +1,11 @@
 ﻿using Auto.io.Flows.ViewModels.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions;
+using Lexicom.Mvvm;
 using System.Windows.Input;
 
 namespace Auto.io.Flows.ViewModels;
-public partial class PopupViewModel : ObservableObject, IDataContextCreate, IDataContextShowDialog, IDataContextClose
+public partial class PopupViewModel : ObservableObject, IShowDialogableViewModel, ICloseableViewModel
 {
     private readonly Popup _popup;
 
@@ -14,7 +14,7 @@ public partial class PopupViewModel : ObservableObject, IDataContextCreate, IDat
         _popup = popup;
 
         Title = _popup.Title;
-        Description= _popup.Description;
+        Description = _popup.Description;
         IsCancellable = _popup.IsCancellable;
     }
 
@@ -46,7 +46,6 @@ public partial class PopupViewModel : ObservableObject, IDataContextCreate, IDat
         CloseCommand?.Execute(null);
     }
 
-    private bool _isOk = false;
     [RelayCommand]
     private void Ok()
     {

@@ -1,11 +1,10 @@
 ﻿using Auto.io.Flows.Application.Models.Parameters;
 using Auto.io.Flows.Application.Services;
-using System.Linq;
 
 namespace Auto.io.Flows.Application.Models.Steps;
 public class MouseMoveStep : IStep
 {
-    private IMouseService _mouseService;
+    private readonly IMouseService _mouseService;
 
     public MouseMoveStep(IMouseService mouseService)
     {

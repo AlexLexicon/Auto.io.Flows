@@ -1,6 +1,6 @@
 ﻿using Auto.io.Flows.Application.Models;
 using Auto.io.Flows.ViewModels.Abstractions;
-using Lexicon.Common.Wpf.DependencyInjection.Mvvm.Abstractions.Factories;
+using Lexicom.Mvvm;
 
 namespace Auto.io.Flows.ViewModels.Factories;
 public interface IBuilderParameterFactory
@@ -9,25 +9,21 @@ public interface IBuilderParameterFactory
 }
 public class BuilderParameterFactory : IBuilderParameterFactory
 {
-    private readonly IDataContextFactory _dataContextFactory;
+    private readonly IViewModelFactory _viewModelFactory;
 
-    public BuilderParameterFactory(IDataContextFactory dataContextFactory)
+    public BuilderParameterFactory(IViewModelFactory viewModelFactory)
     {
-        _dataContextFactory = dataContextFactory;
+        _viewModelFactory = viewModelFactory;
     }
 
     public BuilderParameterViewModel CreateBuilderParameter(IParameter parameter)
     {
-        switch (parameter.UserInterface)
+        return parameter.UserInterface switch
         {
-            case UserInterfaces.TextBox:
-                return _dataContextFactory.Create<BuilderParameterTextBoxViewModel, IParameter>(parameter);
-            case UserInterfaces.ComboBox:
-                return _dataContextFactory.Create<BuilderParameterComboBoxViewModel, IParameter>(parameter);
-            case UserInterfaces.FilePathBrowser:
-                return _dataContextFactory.Create<BuilderParameterFilePathBrowserViewModel, IParameter>(parameter);
-        }
-
-        throw new NotImplementedException($"{nameof(parameter.UserInterface)} '{parameter.UserInterface}' is not implemented for '{nameof(CreateBuilderParameter)}'.");
+            UserInterfaces.TextBox => _viewModelFactory.Create<BuilderParameterTextBoxViewModel, IParameter>(parameter),
+            UserInterfaces.ComboBox => _viewModelFactory.Create<BuilderParameterComboBoxViewModel, IParameter>(parameter),
+            UserInterfaces.FilePathBrowser => _viewModelFactory.Create<BuilderParameterFilePathBrowserViewModel, IParameter>(parameter),
+            _ => throw new NotImplementedException($"{nameof(parameter.UserInterface)} '{parameter.UserInterface}' is not implemented for '{nameof(CreateBuilderParameter)}'."),
+        };
     }
 }
