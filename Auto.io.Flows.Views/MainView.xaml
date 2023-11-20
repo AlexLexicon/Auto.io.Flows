@@ -10,7 +10,8 @@
     d:DataContext="{d:DesignInstance vm:MainViewModel}"
     Title="Auto.io.Flow" 
     Width="800"
-    Height="450">
+    Height="450"
+    Icon="pack://application:,,,/Auto.io.Flows.Views;component/Images/autoioflows.ico">
 
     <DockPanel Background="{StaticResource xBrushColorGrayLightest}">
         <Menu DockPanel.Dock="Top">
